@@ -3,10 +3,10 @@
 #include "windows.h"
 #include <iostream>
 
-const int SCREEN_WIDTH_RESOLUTION = 640;
-const int SCREEN_HEIGHT_RESOLUTION = 480;
+const int SCREEN_WIDTH_RESOLUTION = 755;
+const int SCREEN_HEIGHT_RESOLUTION = 600;
 const int FPS = 60;
-const int DELAY_TIME = 1000.0f / FPS;
+const int DELAY_TIME = 1000 / FPS;
 
 SDL_Window* g_pWindow = 0;
 SDL_Renderer* g_pRenderer = 0;
@@ -15,11 +15,16 @@ bool g_bRunning = false; // bool for the game loop
 
 int main(int argc, char* args[])
 {
-	//AllocConsole();
-	//freopen_s("CON", "w", stdout);
+#ifdef _DEBUG
+	AllocConsole();	
+	freopen("CONOUT$", "w", stdout);
+#endif
+
 	Uint32 frameStart, frameTime;
 
+#ifdef _DEBUG
 	std::cout << "game init attempt...\n";
+#endif
 
 	// initialize SDL
 	if (TheGame::Instance()->init("Midas Miner",
@@ -29,7 +34,9 @@ int main(int argc, char* args[])
 		SCREEN_HEIGHT_RESOLUTION,
 		false))
 	{
+#ifdef _DEBUG
 		std::cout << "game init success!\n";
+#endif
 
 		// Main Game Loop
 		while (TheGame::Instance()->running())
@@ -50,11 +57,15 @@ int main(int argc, char* args[])
 	}
 	else
 	{
+#ifdef _DEBUG
 		std::cout << "game init failure - " << SDL_GetError() << "\n";
+#endif
 		return -1; // something went wrong
 	}
 
+#ifdef _DEBUG
 	std::cout << "game closing...\n";
+#endif
 	TheGame::Instance()->clean();
 
 	return 0;

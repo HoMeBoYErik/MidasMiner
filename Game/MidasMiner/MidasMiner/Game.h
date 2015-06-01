@@ -8,6 +8,7 @@
 #define __Game__
 
 #include "SDL.h"
+#include <SDL_image.h>
 //#include "GameStateMachine.h"
 //#include "SDL_mixer.h"
 //#include "Vector2D.h"
@@ -38,7 +39,11 @@ public:
 
 	SDL_Renderer* getRenderer() const { return m_pRenderer; }
 	SDL_Window* getWindow() const { return m_pWindow; }
-	//GameStateMachine* getStateMachine() { return m_pGameStateMachine; }	
+	//GameStateMachine* getStateMachine() { return m_pGameStateMachine; }
+
+	SDL_Texture* m_pTexture;
+	SDL_Rect m_sourceRectangle;
+	SDL_Rect m_destinationRectangle;
 
 	void setCurrentLevel(int currentLevel);
 	const int getCurrentLevel() { return m_currentLevel; }
