@@ -37,6 +37,16 @@ int main(int argc, char* args[])
 #ifdef _DEBUG
 		std::cout << "game init success!\n";
 #endif
+		
+		/* //Game Loop reference
+		double lastTime = getCurrentTime(); 
+		while (true) { 
+			double current = getCurrentTime(); 
+			double elapsed = current - lastTime; 
+			processInput(); 
+			update( elapsed); render(); lastTime = current; 
+		}
+		*/
 
 		// Main Game Loop
 		while (TheGame::Instance()->running())

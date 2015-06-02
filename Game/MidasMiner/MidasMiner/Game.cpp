@@ -1,7 +1,7 @@
 #include "Game.h"
 
-/*#include "TextureManager.h"
-#include "InputHandler.h"
+#include "TextureManager.h"
+/*#include "InputHandler.h"
 #include "MainMenuState.h"
 #include "GameObjectFactory.h"
 #include "MenuButton.h"
@@ -51,6 +51,8 @@ bool Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 		flags = SDL_WINDOW_FULLSCREEN;
 	}
 
+	/* ALL SDL INITIALIZATIONS */
+	
 	// attempt to initialise SDL
 	if (SDL_Init(SDL_INIT_EVERYTHING) == 0)
 	{
@@ -97,15 +99,27 @@ bool Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 #endif
 		return false; // SDL init fail
 	}
+	/* END OF ALL SDL INITIALIZATIONS */
+	
 
-	SDL_Surface* pTempSurface = IMG_Load("assets/BackGround.jpg");
+	/*SDL_Surface* pTempSurface = IMG_Load("assets/BackGround.jpg");
 	m_pTexture = SDL_CreateTextureFromSurface(m_pRenderer, pTempSurface);
 	SDL_FreeSurface(pTempSurface);
 	SDL_QueryTexture(m_pTexture, NULL, NULL, &m_sourceRectangle.w, &m_sourceRectangle.h);
 	m_destinationRectangle.x = m_sourceRectangle.x = 0;
 	m_destinationRectangle.y = m_sourceRectangle.y = 0;
 	m_destinationRectangle.w = m_sourceRectangle.w;
-	m_destinationRectangle.h = m_sourceRectangle.h;
+	m_destinationRectangle.h = m_sourceRectangle.h;*/
+
+	// Loading background image asset
+	TheTextureManager::Instance()->load("assets/BackGround.jpg", "background", m_pRenderer);
+	// Loading gems image assets
+	TheTextureManager::Instance()->load("assets/Blue.png", "blueGem", m_pRenderer);
+	TheTextureManager::Instance()->load("assets/Green.png", "greenGem", m_pRenderer);
+	TheTextureManager::Instance()->load("assets/Purple.png", "purpleGem", m_pRenderer);
+	TheTextureManager::Instance()->load("assets/Red.png", "redGem", m_pRenderer);
+	TheTextureManager::Instance()->load("assets/Yellow.png", "yellowGem", m_pRenderer);
+
 
 	// add some sound effects - TODO move to better place
 	/*TheSoundManager::Instance()->load("assets/DST-Away.ogg", "music1", SOUND_MUSIC);
@@ -138,7 +152,88 @@ void Game::render()
 	SDL_RenderClear(m_pRenderer);		// clear the frame buffer
 
 	//m_pGameStateMachine->render();
-	SDL_RenderCopy(m_pRenderer, m_pTexture, &m_sourceRectangle, &m_destinationRectangle);
+	
+	TheTextureManager::Instance()->draw("background", 0, 0, 755, 600, m_pRenderer, SDL_FLIP_NONE);
+	
+	// Testing first column
+	TheTextureManager::Instance()->draw("redGem",		325, 100, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+	TheTextureManager::Instance()->draw("blueGem",		325, 145, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+	TheTextureManager::Instance()->draw("greenGem",		325, 190, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+	TheTextureManager::Instance()->draw("yellowGem",	325, 235, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+	TheTextureManager::Instance()->draw("purpleGem",	325, 280, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+	TheTextureManager::Instance()->draw("redGem",		325, 325, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+	TheTextureManager::Instance()->draw("blueGem",		325, 370, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+	TheTextureManager::Instance()->draw("greenGem",		325, 415, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+
+	// Testing second column
+	TheTextureManager::Instance()->draw("redGem",		370, 100, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+	TheTextureManager::Instance()->draw("blueGem",		370, 145, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+	TheTextureManager::Instance()->draw("greenGem",		370, 190, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+	TheTextureManager::Instance()->draw("yellowGem",	370, 235, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+	TheTextureManager::Instance()->draw("purpleGem",	370, 280, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+	TheTextureManager::Instance()->draw("redGem",		370, 325, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+	TheTextureManager::Instance()->draw("blueGem",		370, 370, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+	TheTextureManager::Instance()->draw("greenGem",		370, 415, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+
+	// Testing third column
+	TheTextureManager::Instance()->draw("redGem",		415, 100, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+	TheTextureManager::Instance()->draw("blueGem",		415, 145, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+	TheTextureManager::Instance()->draw("greenGem",		415, 190, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+	TheTextureManager::Instance()->draw("yellowGem",	415, 235, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+	TheTextureManager::Instance()->draw("purpleGem",	415, 280, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+	TheTextureManager::Instance()->draw("redGem",		415, 325, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+	TheTextureManager::Instance()->draw("blueGem",		415, 370, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+	TheTextureManager::Instance()->draw("greenGem",		415, 415, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+
+	// Testing fourth column
+	TheTextureManager::Instance()->draw("redGem",		460, 100, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+	TheTextureManager::Instance()->draw("blueGem",		460, 145, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+	TheTextureManager::Instance()->draw("greenGem",		460, 190, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+	TheTextureManager::Instance()->draw("yellowGem",	460, 235, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+	TheTextureManager::Instance()->draw("purpleGem",	460, 280, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+	TheTextureManager::Instance()->draw("redGem",		460, 325, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+	TheTextureManager::Instance()->draw("blueGem",		460, 370, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+	TheTextureManager::Instance()->draw("greenGem",		460, 415, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+
+	// Testing fifth column
+	TheTextureManager::Instance()->draw("redGem",		505, 100, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+	TheTextureManager::Instance()->draw("blueGem",		505, 145, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+	TheTextureManager::Instance()->draw("greenGem",		505, 190, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+	TheTextureManager::Instance()->draw("yellowGem",	505, 235, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+	TheTextureManager::Instance()->draw("purpleGem",	505, 280, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+	TheTextureManager::Instance()->draw("redGem",		505, 325, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+	TheTextureManager::Instance()->draw("blueGem",		505, 370, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+	TheTextureManager::Instance()->draw("greenGem",		505, 415, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+
+	// Testing sixth column
+	TheTextureManager::Instance()->draw("redGem",		550, 100, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+	TheTextureManager::Instance()->draw("blueGem",		550, 145, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+	TheTextureManager::Instance()->draw("greenGem",		550, 190, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+	TheTextureManager::Instance()->draw("yellowGem",	550, 235, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+	TheTextureManager::Instance()->draw("purpleGem",	550, 280, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+	TheTextureManager::Instance()->draw("redGem",		550, 325, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+	TheTextureManager::Instance()->draw("blueGem",		550, 370, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+	TheTextureManager::Instance()->draw("greenGem",		550, 415, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+
+	// Testing seventh column
+	TheTextureManager::Instance()->draw("redGem",		595, 100, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+	TheTextureManager::Instance()->draw("blueGem",		595, 145, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+	TheTextureManager::Instance()->draw("greenGem",		595, 190, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+	TheTextureManager::Instance()->draw("yellowGem",	595, 235, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+	TheTextureManager::Instance()->draw("purpleGem",	595, 280, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+	TheTextureManager::Instance()->draw("redGem",		595, 325, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+	TheTextureManager::Instance()->draw("blueGem",		595, 370, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+	TheTextureManager::Instance()->draw("greenGem",		595, 415, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+
+	// Testing eight column
+	TheTextureManager::Instance()->draw("redGem",		640, 100, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+	TheTextureManager::Instance()->draw("blueGem",		640, 145, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+	TheTextureManager::Instance()->draw("greenGem",		640, 190, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+	TheTextureManager::Instance()->draw("yellowGem",	640, 235, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+	TheTextureManager::Instance()->draw("purpleGem",	640, 280, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+	TheTextureManager::Instance()->draw("redGem",		640, 325, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+	TheTextureManager::Instance()->draw("blueGem",		640, 370, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+	TheTextureManager::Instance()->draw("greenGem",		640, 415, 35, 35, m_pRenderer, SDL_FLIP_NONE);
 
 	SDL_RenderPresent(m_pRenderer);		// render to the screen
 }
