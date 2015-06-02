@@ -39,12 +39,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>Z:\King\MidasMiner\Libs\SDL2-2.0.3\include;$(IncludePath)</IncludePath>
-    <LibraryPath>Z:\King\MidasMiner\Libs\SDL2-2.0.3\lib\lib_x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)\..\..\..\Libs\SDL2-2.0.3\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)\..\..\..\Libs\SDL2-2.0.3\lib\lib_x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>Z:\King\MidasMiner\Libs\SDL2-2.0.3\include;$(IncludePath)</IncludePath>
-    <LibraryPath>Z:\King\MidasMiner\Libs\SDL2-2.0.3\lib\lib_x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)\..\..\..\Libs\SDL2-2.0.3\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)\..\..\..\Libs\SDL2-2.0.3\lib\lib_x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
