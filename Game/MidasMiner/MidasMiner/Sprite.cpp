@@ -9,6 +9,8 @@ Sprite::Sprite()
 {
 	mPosX = 0;
 	mPosY = 0;
+	mVelX = 0;
+	mVelY = 0;
 }
 
 
@@ -19,7 +21,7 @@ Sprite::~Sprite()
 void Sprite::handleEvent(SDL_Event& e)
 {
 	//If a key was pressed
-	if (e.type == SDL_KEYDOWN)
+	if (e.type == SDL_KEYDOWN && e.key.repeat == 0 )
 	{
 		//Adjust the velocity
 		switch (e.key.keysym.sym)
@@ -31,7 +33,7 @@ void Sprite::handleEvent(SDL_Event& e)
 		}
 	}
 	//If a key was released
-	else if (e.type == SDL_KEYUP)
+	else if (e.type == SDL_KEYUP && e.key.repeat == 0 )
 	{
 		//Adjust the velocity
 		switch (e.key.keysym.sym)
@@ -51,9 +53,6 @@ void Sprite::move(float timeStep)
 
 	// Move the sprite up or down
 	mPosY += mVelY * timeStep;
-
-	std::cout << "sprite vel = " << mVelX << " : " << mVelY << std::endl;
-	std::cout << "sprite pos = " << mPosX << " : " << mPosY << std::endl;
 
 	// Avoid sprite exiting the screen
 	if (mPosX < 0)

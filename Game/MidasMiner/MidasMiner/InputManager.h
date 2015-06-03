@@ -11,16 +11,17 @@
 //#include "Vector2D.h"
 
 
-enum mouse_buttons
+/*enum mouse_buttons
 {
 	LEFT = 0,
 	MIDDLE = 1,
 	RIGHT = 2
-};
+};*/
 
 class InputManager
 {
 public:
+
 	static InputManager* Instance()
 	{
 		if (s_pInstance == 0)
@@ -31,22 +32,24 @@ public:
 
 		return s_pInstance;
 	}
-
 	
-	void reset();
+	void handleEvent(SDL_Event& e);
+
+	//void reset();
 
 	// update and clean the input handler
-	void update();
-	void clean();
+	//void update();
+	//void clean();
 
 	// mouse events
-	bool getMouseButtonState(int buttonNumber) const;
+	//bool getMouseButtonState(int buttonNumber) const;
 	//Vector2D* getMousePosition() const;
 
 
 private:
-	InputManager();
-	~InputManager();
+
+	InputManager(){};
+	~InputManager(){};
 
 	InputManager(const InputManager&);
 	InputManager& operator=(const InputManager&);
@@ -54,19 +57,19 @@ private:
 	// private functions to handle different event types
 
 	// handle keyboard events
-	void onKeyDown();
-	void onKeyUp();
+	//void onKeyDown();
+	//void onKeyUp();
 
 	// handle mouse events
-	void onMouseMove(SDL_Event& event);
-	void onMouseButtonDown(SDL_Event& event);
-	void onMouseButtonUp(SDL_Event& event);
+	//void onMouseMove(SDL_Event& event);
+	//void onMouseButtonDown(SDL_Event& event);
+	//void onMouseButtonUp(SDL_Event& event);
 
 	// keyboard specific
-	const Uint8* m_keystates;
+	//const Uint8* m_keystates;
 	
 	// mouse specific
-	std::vector<bool> m_mouseButtonStates;
+	//std::vector<bool> m_mouseButtonStates;
 	//Vector2D* m_mousePosition;
 
 

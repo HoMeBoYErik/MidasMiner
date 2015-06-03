@@ -5,24 +5,14 @@
 #include "windows.h"
 #include <iostream>
 
-/*
-const int SCREEN_WIDTH_RESOLUTION = 755;
-const int SCREEN_HEIGHT_RESOLUTION = 600;
-const int FPS = 60;
-const int DELAY_TIME = 1000 / FPS;*/
-
 //Keeps track of time between steps
 Timer stepTimer;
-
-SDL_Window* g_pWindow = 0;
-SDL_Renderer* g_pRenderer = 0;
-bool g_bRunning = false; // bool for the game loop
-//LTimer stepTimer;
-
 
 int main(int argc, char* args[])
 {
 #ifdef _DEBUG
+	// Create a console to dump debug
+	// Remove this and CRT suppress warning when compiling for release
 	AllocConsole();	
 	freopen("CONOUT$", "w", stdout);
 #endif

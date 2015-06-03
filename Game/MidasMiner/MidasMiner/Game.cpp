@@ -1,6 +1,7 @@
 #include "Game.h"
 
 #include "TextureManager.h"
+#include "InputManager.h"
 /*#include "InputHandler.h"
 #include "MainMenuState.h"
 #include "GameObjectFactory.h"
@@ -23,9 +24,6 @@ m_pRenderer(0),
 m_bRunning(false),
 m_bLevelComplete(false)
 {
-	// add some level files to an array
-	//m_levelFiles.push_back("assets/map1.tmx");
-
 	// start at this level
 	m_currentLevel = 1;
 }
@@ -260,11 +258,13 @@ void Game::handleEvents()
 			case SDL_QUIT:
 				m_bRunning = false;
 			break;
-
+			
 			default:
 				break;
 		}
 
+		// Pass on the input
+		TheInputManager::Instance()->handleEvent(event);
 		gemTest->handleEvent(event);
 	}
 }
