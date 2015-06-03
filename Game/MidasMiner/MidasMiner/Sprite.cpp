@@ -1,0 +1,84 @@
+#include "Sprite.h"
+#include "Constants.h"
+#include "TextureManager.h"
+
+
+
+
+Sprite::Sprite()
+{
+	mPosX = 0;
+	mPosY = 0;
+}
+
+
+Sprite::~Sprite()
+{
+}
+
+void Sprite::handleEvent(SDL_Event& e)
+{
+	//If a key was pressed
+	if (e.type == SDL_KEYDOWN)
+	{
+		//Adjust the velocity
+		switch (e.key.keysym.sym)
+		{
+			case SDLK_UP: mVelY -= 200; break;
+			case SDLK_DOWN: mVelY += 200; break;
+			case SDLK_LEFT: mVelX -= 200; break;
+			case SDLK_RIGHT: mVelX += 200; break;
+		}
+	}
+	//If a key was released
+	else if (e.type == SDL_KEYUP)
+	{
+		//Adjust the velocity
+		switch (e.key.keysym.sym)
+		{
+			case SDLK_UP: mVelY += 200; break;
+			case SDLK_DOWN: mVelY -= 200; break;
+			case SDLK_LEFT: mVelX += 200; break;
+			case SDLK_RIGHT: mVelX -= 200; break;
+		}
+	}
+}
+
+void Sprite::move(float timeStep)
+{
+	// Move the sprite left or right
+	mPosX += mVelX * timeStep;
+
+	// Move the sprite up or down
+	mPosY += mVelY * timeStep;
+
+	std::cout << "sprite vel = " << mVelX << " : " << mVelY << std::endl;
+	std::cout << "sprite pos = " << mPosX << " : " << mPosY << std::endl;
+
+	// Avoid sprite exiting the screen
+	if (mPosX < 0)
+	{
+		mPosX = 0;
+	}
+	else if (mPosX > SCREEN_WIDTH_RESOLUTION - DEFAULT_SPRITE_SIZE)
+	{
+		mPosX = SCREEN_WIDTH_RESOLUTION - DEFAULT_SPRITE_SIZE;
+	}
+
+	// Avoid sprite exiting the screen
+	if (mPosY < 0)
+	{
+		mPosY = 0;
+	}
+	else if (mPosY > SCREEN_HEIGHT_RESOLUTION - DEFAULT_SPRITE_SIZE)
+	{
+		mPosY = SCREEN_HEIGHT_RESOLUTION - DEFAULT_SPRITE_SIZE;
+	}
+
+	
+}
+
+void Sprite::render(SDL_Renderer* pRenderer)
+{
+	TheTextureManager::Instance()->draw("redGem", (int)mPosX, (int)mPosY, 35, 35, pRenderer, SDL_FLIP_NONE);
+}

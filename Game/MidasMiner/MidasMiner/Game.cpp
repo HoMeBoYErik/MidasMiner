@@ -120,6 +120,8 @@ bool Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 	TheTextureManager::Instance()->load("assets/Red.png", "redGem", m_pRenderer);
 	TheTextureManager::Instance()->load("assets/Yellow.png", "yellowGem", m_pRenderer);
 
+	gemTest = new Sprite();
+
 
 	// add some sound effects - TODO move to better place
 	/*TheSoundManager::Instance()->load("assets/DST-Away.ogg", "music1", SOUND_MUSIC);
@@ -235,19 +237,22 @@ void Game::render()
 	TheTextureManager::Instance()->draw("blueGem",		640, 370, 35, 35, m_pRenderer, SDL_FLIP_NONE);
 	TheTextureManager::Instance()->draw("greenGem",		640, 415, 35, 35, m_pRenderer, SDL_FLIP_NONE);
 
+	gemTest->render(m_pRenderer);
+
 	SDL_RenderPresent(m_pRenderer);		// render to the screen
 }
 
-void Game::update()
+void Game::update(float timeStep)
 {
 	//m_pGameStateMachine->update();
+	gemTest->move(timeStep);
 }
 
 void Game::handleEvents()
 {
 	//TheInputHandler::Instance()->update();
 	SDL_Event event;
-	if (SDL_PollEvent(&event))
+	while (SDL_PollEvent(&event))
 	{
 		switch (event.type)
 		{
@@ -259,6 +264,8 @@ void Game::handleEvents()
 			default:
 				break;
 		}
+
+		gemTest->handleEvent(event);
 	}
 }
 
@@ -276,6 +283,8 @@ void Game::clean()
 	//delete m_pGameStateMachine;
 
 	//TheTextureManager::Instance()->clearTextureMap();
+	delete gemTest;
+
 
 	SDL_DestroyWindow(m_pWindow);
 	SDL_DestroyRenderer(m_pRenderer);

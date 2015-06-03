@@ -9,6 +9,7 @@
 
 #include "SDL.h"
 #include <SDL_image.h>
+#include "Sprite.h"
 //#include "GameStateMachine.h"
 //#include "SDL_mixer.h"
 //#include "Vector2D.h"
@@ -33,7 +34,7 @@ public:
 	bool init(const char* title, int xpos, int ypos, int width, int height, bool fullscreen);
 
 	void render();
-	void update();
+	void update(float timeStep);
 	void handleEvents();
 	void clean();
 
@@ -62,6 +63,8 @@ public:
 	int getGameHeight() const { return m_gameHeight; }
 
 	std::vector<std::string> getLevelFiles() { return m_levelFiles; }
+
+	Sprite *gemTest;
 
 private:
 
