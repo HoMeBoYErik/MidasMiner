@@ -3,6 +3,8 @@
 #include "SpriteManager.h"
 #include "InputManager.h"
 #include "AudioManager.h"
+#include "GameManager.h"
+#include <time.h>
 /*#include "InputHandler.h"
 #include "MainMenuState.h"
 #include "GameObjectFactory.h"
@@ -38,6 +40,9 @@ Game::~Game()
 
 bool Game::init(const char* title, int xpos, int ypos, int width, int height, bool fullscreen)
 {
+	// Init pseudo random number generator
+	srand(static_cast<unsigned int>(time(NULL)));
+	
 	int flags = 0;
 
 	// store the game width and height
@@ -116,6 +121,14 @@ bool Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 		return false; // something went wrong loading audio assets
 	}
 
+	/* INIT AUDIO MANAGER AND LOAD AUDIO ASSETS */
+	if (!GGameManager::Instance()->init())
+	{
+		return false; // something went wrong loading audio assets
+	}
+
+
+
 	gemTest = new Sprite();	
 
 	// start the menu state
@@ -173,7 +186,7 @@ void Game::render()
 	GSpriteManager::Instance()->drawCropped("background", 0, 94, 0, 94, 755, 506, m_pRenderer, SDL_FLIP_NONE);
 	
 	// Testing first column
-	GSpriteManager::Instance()->draw("redGem", 325, 100, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+	/*GSpriteManager::Instance()->draw("redGem", 325, 100, 35, 35, m_pRenderer, SDL_FLIP_NONE);
 	GSpriteManager::Instance()->draw("blueGem", 325, 145, 35, 35, m_pRenderer, SDL_FLIP_NONE);
 	GSpriteManager::Instance()->draw("greenGem", 325, 190, 35, 35, m_pRenderer, SDL_FLIP_NONE);
 	GSpriteManager::Instance()->draw("yellowGem", 325, 235, 35, 35, m_pRenderer, SDL_FLIP_NONE);
@@ -250,9 +263,11 @@ void Game::render()
 	GSpriteManager::Instance()->draw("purpleGem",	640, 280, 35, 35, m_pRenderer, SDL_FLIP_NONE);
 	GSpriteManager::Instance()->draw("redGem",		640, 325, 35, 35, m_pRenderer, SDL_FLIP_NONE);
 	GSpriteManager::Instance()->draw("blueGem",		640, 370, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-	GSpriteManager::Instance()->draw("greenGem",		640, 415, 35, 35, m_pRenderer, SDL_FLIP_NONE);
+	GSpriteManager::Instance()->draw("greenGem",		640, 415, 35, 35, m_pRenderer, SDL_FLIP_NONE);*/
 
 	gemTest->render(m_pRenderer);
+
+	GGameManager::Instance()->render(m_pRenderer);
 
 	// Draw top part of tunnel last to simulate gems occlusion
 	GSpriteManager::Instance()->drawCropped("background", 0, 0, 0, 0, 755, 94, m_pRenderer, SDL_FLIP_NONE);

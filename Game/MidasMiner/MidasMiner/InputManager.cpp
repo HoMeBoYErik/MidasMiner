@@ -1,6 +1,7 @@
 #include "InputManager.h"
 #include "SDL.h"
 #include "AudioManager.h"
+#include "GameManager.h"
 
 InputManager* InputManager::s_pInstance = 0;
 
@@ -23,7 +24,17 @@ void InputManager::handleEvent(SDL_Event& e)
 			{
 				//SDL_Log("Mouse Button 1 (left) is pressed.");
 				//std::cout << "Mouse Position (" << x << ", " << y << ")" << std::endl;
-				GAudioManager::Instance()->playSound("combo1", 0);
+				
+				if (GGameManager::Instance()->isPointInBoard(x, y))
+				{
+					GAudioManager::Instance()->playSound("combo1", 0);
+
+					int row; int col;
+					GGameManager::Instance()->mapPointToBoardCell(x, y, row,col);
+
+					// Player select a cell -> notify game manager
+					GGameManager::Instance()->boardGameObjects[row][col]->isSelected = true;
+				}
 				
 			}
 			if (SDL_GetMouseState(&x, &y) & SDL_BUTTON(SDL_BUTTON_RIGHT))

@@ -49,6 +49,9 @@ bool SpriteManager::init(SDL_Renderer* pRenderer)
 	GSpriteManager::Instance()->load("assets/sprites/RedSelected.png", "redGemSelected", pRenderer);
 	GSpriteManager::Instance()->load("assets/sprites/YellowSelected.png", "yellowGemSelected", pRenderer);
 
+	GSpriteManager::Instance()->defaultSpriteId = std::string("blueGem");
+
+	
 	return true;
 }
 

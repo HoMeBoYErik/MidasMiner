@@ -37,6 +37,8 @@ public:
 
 	std::map<std::string, SDL_Texture*> getTextureMap() { return m_textureMap; }
 
+	std::string defaultSpriteId;
+
 private:
 
 	SpriteManager() {};
