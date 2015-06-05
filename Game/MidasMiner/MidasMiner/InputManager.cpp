@@ -5,48 +5,150 @@
 
 InputManager* InputManager::s_pInstance = 0;
 
+
+bool InputManager::noGemSelected()
+{
+	return (fromRow == -1 && fromCol == -1);
+}
+
+void InputManager::selectSwapFrom(int x, int y)
+{
+	// Store current row and col as from selection
+	GGameManager::Instance()->mapPointToBoardCell(x, y, fromRow, fromCol);
+	// Player select a gem
+	selectedGameObjectFrom = GGameManager::Instance()->boardGameObjects[fromRow][fromCol];
+	selectedGameObjectFrom->setSelected(true);
+}
+
+void InputManager::selectSwapTo(int x, int y)
+{
+	// Store current row and col as to selection
+	GGameManager::Instance()->mapPointToBoardCell(x, y, toRow, toCol);
+	selectedGameObjectTo = GGameManager::Instance()->boardGameObjects[toRow][toCol];
+	selectedGameObjectTo->setSelected(true);
+}
+
+void InputManager::clearSwapTo()
+{
+	toRow = -1;
+	toCol = -1;
+	selectedGameObjectTo = NULL;
+}
+
+void InputManager::clearAllSwap()
+{
+
+	selectedGameObjectFrom->setSelected(false);
+	selectedGameObjectTo->setSelected(false);
+
+	// NULLIFY FROM object
+	selectedGameObjectFrom = NULL;
+	fromRow = -1;
+	fromCol = -1;
+	// NULLIFY TO object
+	selectedGameObjectTo = NULL;
+	toRow = -1;
+	toCol = -1;
+}
+
+void InputManager::resetSwap()
+{
+	// Turn off old FROM object
+	selectedGameObjectFrom->setSelected(false);	
+	// Swap pointers and coords
+	fromRow = toRow;
+	fromCol = toCol;
+	selectedGameObjectFrom = selectedGameObjectTo;
+	
+	// Turn on new FROM object
+	selectedGameObjectFrom->setSelected(true);	
+	
+	// NULLIFY OLD TO object
+	selectedGameObjectTo = NULL;
+	toRow = -1;
+	toCol = -1;
+}
+
+
 void InputManager::handleEvent(SDL_Event& e)
 {
-	//If mouse event happened
-	if (e.type == SDL_MOUSEMOTION || e.type == SDL_MOUSEBUTTONDOWN || e.type == SDL_MOUSEBUTTONUP)
+	if (userInteractionEnabled)
 	{
 		//Get mouse position
 		int x, y;
 		SDL_GetMouseState(&x, &y);
 
-		if (e.type == SDL_MOUSEMOTION)
+		// Begin click of left button
+		if (e.type == SDL_MOUSEBUTTONDOWN && e.button.button == SDL_BUTTON_LEFT && e.key.repeat == 0)
 		{
-			//std::cout << "Mouse Position (" << x << ", " << y << ")" << std::endl;
-		}
-		else if (e.type == SDL_MOUSEBUTTONDOWN)
-		{
-			if (SDL_GetMouseState(&x, &y) & SDL_BUTTON(SDL_BUTTON_LEFT)) 
+
+			//std::cout << "Left mouse button pressed down " << std::endl;
+			// if is a valid cell
+			if (GGameManager::Instance()->isPointInBoard(x, y))
 			{
-				//SDL_Log("Mouse Button 1 (left) is pressed.");
-				//std::cout << "Mouse Position (" << x << ", " << y << ")" << std::endl;
-				
-				if (GGameManager::Instance()->isPointInBoard(x, y))
+				// there is no previous gem selected
+				if (noGemSelected())
 				{
+					selectSwapFrom(x, y);
+					// Play a sound for selected gem
+					GAudioManager::Instance()->playSound("combo1", 0);
+				}
+				// second click on another gem: two step swap
+				else
+				{
+					selectSwapTo(x, y);
 					GAudioManager::Instance()->playSound("combo1", 0);
 
-					int row; int col;
-					GGameManager::Instance()->mapPointToBoardCell(x, y, row,col);
-
-					// Player select a cell -> notify game manager
-					GGameManager::Instance()->boardGameObjects[row][col]->isSelected = true;
+					if (GGameManager::Instance()->isValidSwap(fromRow, fromCol, toRow, toCol))
+					{
+						std::cout << "1 Valid swap from (" << fromRow << "," << fromCol << ") to :(" << toRow << "," << toCol << ")" << std::endl;
+						std::cout << "Update game board, start animations and more" << std::endl;
+						clearAllSwap();
+					}
+					else if (GGameManager::Instance()->isSameBoardCell(fromRow, fromCol, toRow, toCol))
+					{
+						// clear swap to
+						clearSwapTo();
+					}
+					// invalid swap, reset selection and leave selected the new one				
+					else
+					{
+						resetSwap();
+					}
 				}
-				
 			}
-			if (SDL_GetMouseState(&x, &y) & SDL_BUTTON(SDL_BUTTON_RIGHT))
-			{				
-				;// do nothing for now
-			}
-			if (SDL_GetMouseState(&x, &y) & SDL_BUTTON(SDL_BUTTON_MIDDLE))
-			{				
-				;// do nothing for now
-			}
-			
 		}
-		
+
+		else if (e.type == SDL_MOUSEBUTTONUP && e.button.button == SDL_BUTTON_LEFT && e.key.repeat == 0)
+		{
+			//std::cout << " Left Mouse button up event" << std::endl;
+			// if is a valid cell
+			if (GGameManager::Instance()->isPointInBoard(x, y))
+			{
+				// there is a previous gem selected
+				if (!noGemSelected())
+				{
+					selectSwapTo(x, y);
+
+					if (GGameManager::Instance()->isValidSwap(fromRow, fromCol, toRow, toCol))
+					{
+						std::cout << "2 Valid swap from (" << fromRow << "," << fromCol << ") to :(" << toRow << "," << toCol << ")" << std::endl;
+						std::cout << "Update game board, start animations and more" << std::endl;
+						clearAllSwap();
+					}
+					else if (GGameManager::Instance()->isSameBoardCell(fromRow, fromCol, toRow, toCol))
+					{
+						// clear swap to
+						clearSwapTo();
+					}
+					// player just clicked one gem as a simple select
+					else
+					{
+						resetSwap();
+					}
+				}
+			}
+		}
 	}
+			
 }

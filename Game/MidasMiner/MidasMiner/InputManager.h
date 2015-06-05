@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "SDL.h"
+#include "GameObject.h"
 //#include "Vector2D.h"
 
 
@@ -47,6 +48,9 @@ public:
 	//bool getMouseButtonState(int buttonNumber) const;
 	//Vector2D* getMousePosition() const;
 
+	// mouse control
+	bool userInteractionEnabled = true;
+
 
 private:
 
@@ -55,6 +59,21 @@ private:
 
 	InputManager(const InputManager&);
 	InputManager& operator=(const InputManager&);
+
+	int fromRow = -1;
+	int fromCol = -1;
+	int toRow = -1;
+	int toCol = -1;
+
+	GameObject* selectedGameObjectFrom = NULL;
+	GameObject* selectedGameObjectTo = NULL;
+
+	bool noGemSelected();
+	void selectSwapFrom(int x, int y);
+	void selectSwapTo(int x, int y);
+	void clearSwapTo();
+	void resetSwap();
+	void clearAllSwap();
 
 	// private functions to handle different event types
 

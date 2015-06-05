@@ -61,7 +61,7 @@ void GameManager::populateBoard()
 			switch ( board[row][col] )
 			{				
 				case BLUE_GEM:
-					go = new GameObject(++GameManager::gameObjectCounter, "BlueGem");					
+					go = new GameObject(++GameManager::gameObjectCounter, "BlueGem");
 					go->setNormalSprite("blueGem");
 					go->setSelectedSprite("blueGemSelected");				
 					break;
@@ -170,9 +170,48 @@ void GameManager::calculatePossibleSwaps()
 
 void handlePlayerInput();
 
-bool GameManager::isValidSwap()
+bool GameManager::isValidSwap(int fromRow, int fromCol, int toRow, int toCol)
 {
+	// potentially valid vertical swap
+	if (abs(fromRow - toRow) == 1)
+	{
+		// valid vertical swap
+		if (fromCol == toCol)
+		{
+			return true;
+		}
+		// is a diagonal swap
+		else
+		{
+			return false;
+		}
+	}
+	// potentially valid horizontal swap
+	else if (abs(fromCol - toCol) == 1)
+	{
+		// valid horizontal swap
+		if (fromRow == toRow)
+		{
+			return true;
+		}
+		// is a diagonal swap
+		else
+		{
+			return false;
+		}
+	}
 
+	return false; // invalid swap or same cell
+}
+
+bool GameManager::isSameBoardCell(int fromRow, int fromCol, int toRow, int toCol)
+{
+	if (fromRow == toRow && fromCol == toCol)
+	{
+		return true;
+	}
+
+	return false;
 }
 
 

@@ -58,7 +58,8 @@ public:
 	
 	void calculatePossibleSwaps();
 	void handlePlayerInput();
-	bool isValidSwap();
+	
+	bool isValidSwap(int fromRow, int fromCol, int toRow, int toCol);
 	void detectMatches();
 	void removeChains();
 	void updateScore();
@@ -71,6 +72,7 @@ public:
 	void shuffleBoard();
 	void populateBoard();
 	bool isPointInBoard(int x, int y);
+	bool isSameBoardCell(int fromRow, int fromCol, int toRow, int toCol);
 	void mapPointToBoardCell(int x, int y, int &row, int &col);
 	void mapBoardCellToPoint(int row, int col, int &x, int &y);
 	
