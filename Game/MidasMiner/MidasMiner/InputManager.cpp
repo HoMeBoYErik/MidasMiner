@@ -69,6 +69,17 @@ void InputManager::resetSwap()
 	toCol = -1;
 }
 
+void InputManager::update(float timestep)
+{
+	if (GGameManager::Instance()->hasAnimationRunning())
+	{
+		userInteractionEnabled = false;
+	}
+	else
+	{
+		userInteractionEnabled = true;
+	}
+}
 
 void InputManager::handleEvent(SDL_Event& e)
 {
@@ -101,8 +112,11 @@ void InputManager::handleEvent(SDL_Event& e)
 
 					if (GGameManager::Instance()->isValidSwap(fromRow, fromCol, toRow, toCol))
 					{
-						std::cout << "1 Valid swap from (" << fromRow << "," << fromCol << ") to :(" << toRow << "," << toCol << ")" << std::endl;
-						std::cout << "Update game board, start animations and more" << std::endl;
+						//std::cout << "1 Valid swap from (" << fromRow << "," << fromCol << ") to :(" << toRow << "," << toCol << ")" << std::endl;
+						//std::cout << "Update game board, start animations and more" << std::endl;
+						GGameManager::Instance()->swapGameObjects(fromRow, fromCol, toRow, toCol);						
+						//userInteractionEnabled = false;
+						
 						clearAllSwap();
 					}
 					else if (GGameManager::Instance()->isSameBoardCell(fromRow, fromCol, toRow, toCol))
@@ -132,8 +146,10 @@ void InputManager::handleEvent(SDL_Event& e)
 
 					if (GGameManager::Instance()->isValidSwap(fromRow, fromCol, toRow, toCol))
 					{
-						std::cout << "2 Valid swap from (" << fromRow << "," << fromCol << ") to :(" << toRow << "," << toCol << ")" << std::endl;
-						std::cout << "Update game board, start animations and more" << std::endl;
+						//std::cout << "2 Valid swap from (" << fromRow << "," << fromCol << ") to :(" << toRow << "," << toCol << ")" << std::endl;
+						//std::cout << "Update game board, start animations and more" << std::endl;
+						GGameManager::Instance()->swapGameObjects(fromRow, fromCol, toRow, toCol);
+						//userInteractionEnabled = false;
 						clearAllSwap();
 					}
 					else if (GGameManager::Instance()->isSameBoardCell(fromRow, fromCol, toRow, toCol))
@@ -149,6 +165,5 @@ void InputManager::handleEvent(SDL_Event& e)
 				}
 			}
 		}
-	}
-			
+	}			
 }

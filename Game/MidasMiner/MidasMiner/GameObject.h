@@ -41,6 +41,9 @@ public:
 	// Methods to interact with components
 	// Transform
 	void setPosition(float posX, float posY);
+
+	// Animator
+	void animate(float origX, float origY, float destX, float destY, float duration);
 	
 	// Renderer 
 	void setSelected(bool sel);

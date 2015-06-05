@@ -59,7 +59,8 @@ public:
 	void calculatePossibleSwaps();
 	void handlePlayerInput();
 	
-	bool isValidSwap(int fromRow, int fromCol, int toRow, int toCol);
+	bool isValidSwap(int fromRow, int fromCol, int toRow, int toCol);	
+	void swapGameObjects(int fromRow, int fromCol, int toRow, int toCol);
 	void detectMatches();
 	void removeChains();
 	void updateScore();
@@ -75,20 +76,23 @@ public:
 	bool isSameBoardCell(int fromRow, int fromCol, int toRow, int toCol);
 	void mapPointToBoardCell(int x, int y, int &row, int &col);
 	void mapBoardCellToPoint(int row, int col, int &x, int &y);
+
+	void startedAnimation();
+	void endedAnimation();
+	bool hasAnimationRunning();
 	
 	/* '0' = empty cell */
 	/* 'b' =  Blue Gem */
 	Uint8 board[BOARD_ROWS][BOARD_COLS]; // logic representation of game board
-	GameObject* boardGameObjects[BOARD_ROWS][BOARD_COLS]; // game object mapping between cells and boards
+	GameObject* boardGameObjects[BOARD_ROWS][BOARD_COLS]; // game object mapping between cells and gems
 	// Add a collection of gameobject to maintain relationships
 	std::map<Uint8, GameObject*> m_GameObjects;
-
 
 private:
 	GameManager(){};
 	~GameManager(){};
 
-	bool isClickOnBoard(int x, int y);
+	Uint8 mNumOfActiveAnimations = 0;
 
 	static GameManager* s_pInstance;
 };

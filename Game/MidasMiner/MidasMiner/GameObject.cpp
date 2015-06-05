@@ -1,5 +1,7 @@
 #include "GameObject.h"
 #include "SpriteManager.h"
+#include "Quad.h"
+#include "GameManager.h"
 
 
 GameObject::GameObject(Uint8 id, std::string name) : GameObject(id, name, 0.0f, 0.0f){}
@@ -51,12 +53,34 @@ void GameObject::setSelectedSprite(std::string selectedSpriteId)
 	this->mSelectedSpriteId = selectedSpriteId;
 }
 
+void GameObject::animate(float origX, float origY, float destX, float destY, float duration)
+{
+	animOrigX = origX;
+	animOrigY = origY;
+	animDestX = destX;
+	animDestY = destY;
+	animTotalTime = duration;
+	isAnimating = true;
+}
+
 void GameObject::update(float timeStep)
 {
 	if (isAnimating)
 	{
-		
-	}
+		animCurrentTime += timeStep;
+		setPosition(Quad::easeInOut(animCurrentTime, animOrigX, animDestX - animOrigX, animTotalTime),
+					Quad::easeInOut(animCurrentTime, animOrigY, animDestY - animOrigY, animTotalTime));
+
+		if (animCurrentTime >= animTotalTime)
+		{
+			isAnimating = false;
+			animCurrentTime = 0;
+			std::cout << " Animation ended for gameobject with id "<< this->name << std::endl;
+
+			// Notify end of animation to Game Manager
+			GGameManager::Instance()->endedAnimation();
+		}
+	}	
 }
 
 void GameObject::render(SDL_Renderer* pRenderer)

@@ -41,7 +41,7 @@ public:
 	//void reset();
 
 	// update and clean the input handler
-	//void update();
+	void update(float timeStep);
 	//void clean();
 
 	// mouse events

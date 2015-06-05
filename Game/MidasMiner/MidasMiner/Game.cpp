@@ -150,7 +150,9 @@ void Game::start()
 void Game::update(float timeStep)
 {
 	//m_pGameStateMachine->update();
-	gemTest->move(timeStep);
+	GGameManager::Instance()->update(timeStep);
+	GInputManager::Instance()->update(timeStep);
+	//gemTest->move(timeStep);
 }
 
 void Game::handleEvents()
@@ -182,94 +184,13 @@ void Game::render()
 
 	//m_pGameStateMachine->render();
 	
-	// Draw bottom part of the tunnel first
+	// Draw bottom part of the tunnel first	
 	GSpriteManager::Instance()->drawCropped("background", 0, 94, 0, 94, 755, 506, m_pRenderer, SDL_FLIP_NONE);
-	
-	// Testing first column
-	/*GSpriteManager::Instance()->draw("redGem", 325, 100, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-	GSpriteManager::Instance()->draw("blueGem", 325, 145, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-	GSpriteManager::Instance()->draw("greenGem", 325, 190, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-	GSpriteManager::Instance()->draw("yellowGem", 325, 235, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-	GSpriteManager::Instance()->draw("purpleGem",	325, 280, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-	GSpriteManager::Instance()->draw("redGem",		325, 325, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-	GSpriteManager::Instance()->draw("blueGem",		325, 370, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-	GSpriteManager::Instance()->draw("greenGem",		325, 415, 35, 35, m_pRenderer, SDL_FLIP_NONE);
 
-	// Testing second column
-	GSpriteManager::Instance()->draw("redGem",		370, 100, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-	GSpriteManager::Instance()->draw("blueGem",		370, 145, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-	GSpriteManager::Instance()->draw("greenGem",		370, 190, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-	GSpriteManager::Instance()->draw("yellowGem",	370, 235, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-	GSpriteManager::Instance()->draw("purpleGem",	370, 280, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-	GSpriteManager::Instance()->draw("redGem",		370, 325, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-	GSpriteManager::Instance()->draw("blueGem",		370, 370, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-	GSpriteManager::Instance()->draw("greenGem",		370, 415, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-
-	// Testing third column
-	GSpriteManager::Instance()->draw("redGem",		415, 100, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-	GSpriteManager::Instance()->draw("blueGem",		415, 145, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-	GSpriteManager::Instance()->draw("greenGem",		415, 190, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-	GSpriteManager::Instance()->draw("yellowGem",	415, 235, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-	GSpriteManager::Instance()->draw("purpleGem",	415, 280, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-	GSpriteManager::Instance()->draw("redGem",		415, 325, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-	GSpriteManager::Instance()->draw("blueGem",		415, 370, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-	GSpriteManager::Instance()->draw("greenGem",		415, 415, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-
-	// Testing fourth column
-	GSpriteManager::Instance()->draw("redGem",		460, 100, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-	GSpriteManager::Instance()->draw("blueGem",		460, 145, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-	GSpriteManager::Instance()->draw("greenGem",		460, 190, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-	GSpriteManager::Instance()->draw("yellowGem",	460, 235, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-	GSpriteManager::Instance()->draw("purpleGem",	460, 280, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-	GSpriteManager::Instance()->draw("redGem",		460, 325, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-	GSpriteManager::Instance()->draw("blueGem",		460, 370, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-	GSpriteManager::Instance()->draw("greenGem",		460, 415, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-
-	// Testing fifth column
-	GSpriteManager::Instance()->draw("redGem",		505, 100, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-	GSpriteManager::Instance()->draw("blueGem",		505, 145, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-	GSpriteManager::Instance()->draw("greenGem",		505, 190, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-	GSpriteManager::Instance()->draw("yellowGem",	505, 235, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-	GSpriteManager::Instance()->draw("purpleGem",	505, 280, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-	GSpriteManager::Instance()->draw("redGem",		505, 325, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-	GSpriteManager::Instance()->draw("blueGem",		505, 370, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-	GSpriteManager::Instance()->draw("greenGem",		505, 415, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-
-	// Testing sixth column
-	GSpriteManager::Instance()->draw("redGem",		550, 100, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-	GSpriteManager::Instance()->draw("blueGem",		550, 145, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-	GSpriteManager::Instance()->draw("greenGem",		550, 190, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-	GSpriteManager::Instance()->draw("yellowGem",	550, 235, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-	GSpriteManager::Instance()->draw("purpleGem",	550, 280, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-	GSpriteManager::Instance()->draw("redGem",		550, 325, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-	GSpriteManager::Instance()->draw("blueGem",		550, 370, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-	GSpriteManager::Instance()->draw("greenGem",		550, 415, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-
-	// Testing seventh column
-	GSpriteManager::Instance()->draw("redGem",		595, 100, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-	GSpriteManager::Instance()->draw("blueGem",		595, 145, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-	GSpriteManager::Instance()->draw("greenGem",		595, 190, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-	GSpriteManager::Instance()->draw("yellowGem",	595, 235, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-	GSpriteManager::Instance()->draw("purpleGem",	595, 280, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-	GSpriteManager::Instance()->draw("redGem",		595, 325, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-	GSpriteManager::Instance()->draw("blueGem",		595, 370, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-	GSpriteManager::Instance()->draw("greenGem",		595, 415, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-
-	// Testing eight column
-	GSpriteManager::Instance()->draw("redGem",		640, 100, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-	GSpriteManager::Instance()->draw("blueGem",		640, 145, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-	GSpriteManager::Instance()->draw("greenGem",		640, 190, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-	GSpriteManager::Instance()->draw("yellowGem",	640, 235, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-	GSpriteManager::Instance()->draw("purpleGem",	640, 280, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-	GSpriteManager::Instance()->draw("redGem",		640, 325, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-	GSpriteManager::Instance()->draw("blueGem",		640, 370, 35, 35, m_pRenderer, SDL_FLIP_NONE);
-	GSpriteManager::Instance()->draw("greenGem",		640, 415, 35, 35, m_pRenderer, SDL_FLIP_NONE);*/
-
-	gemTest->render(m_pRenderer);
-
+	// Draw board of GEMS
 	GGameManager::Instance()->render(m_pRenderer);
 
-	// Draw top part of tunnel last to simulate gems occlusion
+	// Draw top part of tunnel last to simulate gems occlusion when falling
 	GSpriteManager::Instance()->drawCropped("background", 0, 0, 0, 0, 755, 94, m_pRenderer, SDL_FLIP_NONE);
 	
 

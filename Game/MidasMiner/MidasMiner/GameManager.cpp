@@ -1,6 +1,7 @@
 // GameManager.cpp
 
 #include "GameManager.h"
+#include "InputManager.h"
 
 GameManager* GameManager::s_pInstance = 0;
 
@@ -27,7 +28,10 @@ bool GameManager::init()
 
 void GameManager::update(float timestep)
 {
-
+	for (auto it = m_GameObjects.begin(); it != m_GameObjects.end(); ++it)
+	{
+		it->second->update(timestep);
+	}
 }
 
 void GameManager::render(SDL_Renderer* pRenderer)
@@ -40,11 +44,24 @@ void GameManager::render(SDL_Renderer* pRenderer)
 
 void GameManager::createNewBoard()
 {
+	Uint8 newGem;
+
 	for (int row = 0; row < BOARD_ROWS; ++row)
 	{
 		for (int col = 0; col < BOARD_COLS; ++col)
 		{
-			board[row][col] = 1 + (Uint8)rand() % DIFFERENT_GEMS; // generate random new board
+			// avoid to fill the board with chains of 3 gems
+			// check the 2 gems to the left and the 2 up
+			do{ newGem = 1 + (Uint8)rand() % DIFFERENT_GEMS; } // generate random new board )
+			while( (col >= 2 &&
+				   board[row][col - 1] == newGem &&
+				   board[row][col - 2] == newGem )
+				   ||
+				   (row >= 2 &&
+				   board[row - 1][col] == newGem &&
+				   board[row - 2][col] == newGem) );
+
+			board[row][col] = newGem;
 		}
 	}	
 }
@@ -156,6 +173,11 @@ void GameManager::mapPointToBoardCell(int x, int y, int &row, int &col)
 	
 }
 
+void GameManager::handlePlayerInput()
+{
+
+}
+
 // Given valid indices (row, col) for the game boards, returns start pixels to draw the sprite 
 void GameManager::mapBoardCellToPoint(int row, int col, int &x, int &y)
 {
@@ -168,7 +190,7 @@ void GameManager::calculatePossibleSwaps()
 
 }
 
-void handlePlayerInput();
+
 
 bool GameManager::isValidSwap(int fromRow, int fromCol, int toRow, int toCol)
 {
@@ -214,6 +236,25 @@ bool GameManager::isSameBoardCell(int fromRow, int fromCol, int toRow, int toCol
 	return false;
 }
 
+void GameManager::swapGameObjects(int fromRow, int fromCol, int toRow, int toCol)
+{
+	GameObject *a;
+	GameObject *b;
+
+	a = boardGameObjects[fromRow][fromCol];
+	b = boardGameObjects[toRow][toCol];
+
+	// Begin animation
+	a->animate(a->mPosX, a->mPosY, b->mPosX, b->mPosY, 0.3f); startedAnimation();
+	b->animate(b->mPosX, b->mPosY, a->mPosX, a->mPosY, 0.3f); startedAnimation();
+
+	// Swap object in logic representatio of the board
+	std::swap(board[fromRow][fromCol], board[toRow][toCol]);	
+	std::swap(boardGameObjects[fromRow][fromCol], boardGameObjects[toRow][toCol]);
+	
+}
+
+
 
 void GameManager::detectMatches()
 {
@@ -238,5 +279,25 @@ void GameManager::makeGemsFall()
 void GameManager::addNewGems()
 {
 
+}
+
+void GameManager::startedAnimation()
+{
+	++mNumOfActiveAnimations;
+
+}
+
+void GameManager::endedAnimation()
+{
+	--mNumOfActiveAnimations;	
+}
+
+bool GameManager::hasAnimationRunning()
+{
+	if (mNumOfActiveAnimations > 0)
+	{
+		return true;
+	}
+	return false;
 }
 
