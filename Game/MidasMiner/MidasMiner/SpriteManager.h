@@ -1,35 +1,37 @@
 //
-//  TextureManager.h
+//  SpriteManager.h
 
-#ifndef __TextureManager__
-#define __TextureManager__
+#ifndef __SpriteManager__
+#define __SpriteManager__
 
 #include <iostream>
 #include <string>
 #include <map>
 #include "SDL.h"
 
-class TextureManager
+class SpriteManager
 {
 public:
 
-	static TextureManager* Instance()
+	static SpriteManager* Instance()
 	{
 		if (s_pInstance == 0)
 		{
-			s_pInstance = new TextureManager();
+			s_pInstance = new SpriteManager();
 			return s_pInstance;
 		}
 
 		return s_pInstance;
 	}
 
+	bool init(SDL_Renderer* pRenderer);
 	bool load(std::string fileName, std::string id, SDL_Renderer* pRenderer);
 
 	void clearTextureMap();
 	void clearFromTextureMap(std::string id);
 
 	void draw(std::string id, int x, int y, int width, int height, SDL_Renderer* pRenderer, SDL_RendererFlip flip = SDL_FLIP_NONE);
+	void drawCropped(std::string id, int startX, int startY, int x, int y, int width, int height, SDL_Renderer* pRenderer, SDL_RendererFlip flip);
 	void drawFrame(std::string id, int x, int y, int width, int height, int currentRow, int currentFrame, SDL_Renderer* pRenderer, double angle, int alpha, SDL_RendererFlip flip = SDL_FLIP_NONE);
 	void drawTile(std::string id, int margin, int spacing, int x, int y, int width, int height, int currentRow, int currentFrame, SDL_Renderer *pRenderer);
 
@@ -37,17 +39,17 @@ public:
 
 private:
 
-	TextureManager() {}
-	~TextureManager() {}
+	SpriteManager() {};
+	~SpriteManager() {};
 
-	TextureManager(const TextureManager&);
-	TextureManager& operator=(const TextureManager&);
+	SpriteManager(const SpriteManager&);
+	SpriteManager& operator=(const SpriteManager&);
 
 	std::map<std::string, SDL_Texture*> m_textureMap;
 
-	static TextureManager* s_pInstance;
+	static SpriteManager* s_pInstance;
 };
 
-typedef TextureManager TheTextureManager;
+typedef SpriteManager GSpriteManager;
 
-#endif /* defined(__TextureManager__) */
+#endif /* defined(__SpriteManager__) */

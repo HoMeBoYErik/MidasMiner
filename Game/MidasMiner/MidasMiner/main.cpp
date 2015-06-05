@@ -35,25 +35,17 @@ int main(int argc, char* args[])
 		std::cout << "game init success!\n";
 #endif
 		
-		/* //Game Loop reference
-		double lastTime = getCurrentTime(); 
-		while (true) { 
-			double current = getCurrentTime(); 
-			double elapsed = current - lastTime; 
-			processInput(); 
-			update( elapsed); render(); lastTime = current; 
-		}
-		*/
+
+		// Start Function - initialize game objects
+		TheGame::Instance()->start();
 
 		// Main Game Loop
 		while (TheGame::Instance()->running())
 		{
 			TheGame::Instance()->handleEvents();
 
-			frameStart = SDL_GetTicks();	// milliseconds since the game started: as Unity Time.time
-			
+			frameStart = SDL_GetTicks();	// milliseconds since the game started: as Unity Time.time			
 			float timeStep = stepTimer.getTicks() / 1000.f; // as Unity Time.deltaTime
-
 			//std::cout << "deltaTime = " << timeStep << "\n";
 			
 			TheGame::Instance()->update(timeStep);

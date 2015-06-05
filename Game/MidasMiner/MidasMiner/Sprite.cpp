@@ -1,6 +1,6 @@
 #include "Sprite.h"
 #include "Constants.h"
-#include "TextureManager.h"
+#include "SpriteManager.h"
 
 
 
@@ -79,5 +79,5 @@ void Sprite::move(float timeStep)
 
 void Sprite::render(SDL_Renderer* pRenderer)
 {
-	TheTextureManager::Instance()->draw("redGem", (int)mPosX, (int)mPosY, 35, 35, pRenderer, SDL_FLIP_NONE);
+	GSpriteManager::Instance()->draw("redGem", (int)mPosX, (int)mPosY, 35, 35, pRenderer, SDL_FLIP_NONE);
 }

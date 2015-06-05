@@ -18,6 +18,8 @@
 	RIGHT = 2
 };*/
 
+
+
 class InputManager
 {
 public:
@@ -76,7 +78,7 @@ private:
 	// singleton instance reference
 	static InputManager *s_pInstance;
 };
-typedef InputManager TheInputManager;
+typedef InputManager GInputManager;
 
 #endif /* defined(__InputManager__) */
 
