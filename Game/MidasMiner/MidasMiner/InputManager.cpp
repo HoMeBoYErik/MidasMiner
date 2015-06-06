@@ -71,7 +71,7 @@ void InputManager::resetSwap()
 
 void InputManager::update(float timestep)
 {
-	if (GGameManager::Instance()->hasAnimationRunning())
+	if (GGameManager::Instance()->hasAnimationRunning() || GGameManager::Instance()->hasToCheckSwap )
 	{
 		userInteractionEnabled = false;
 	}
@@ -114,7 +114,13 @@ void InputManager::handleEvent(SDL_Event& e)
 					{
 						//std::cout << "1 Valid swap from (" << fromRow << "," << fromCol << ") to :(" << toRow << "," << toCol << ")" << std::endl;
 						//std::cout << "Update game board, start animations and more" << std::endl;
-						GGameManager::Instance()->swapGameObjects(fromRow, fromCol, toRow, toCol);						
+						//if (GGameManager::Instance()->isPossibleSwap(fromRow, fromCol, toRow, toCol))
+						//{
+							GGameManager::Instance()->swapGameObjects(fromRow, fromCol, toRow, toCol, true);
+							GGameManager::Instance()->registerLastUserSwap(fromRow, fromCol, toRow, toCol);
+							
+						//}			
+												
 						//userInteractionEnabled = false;
 						
 						clearAllSwap();
@@ -148,8 +154,12 @@ void InputManager::handleEvent(SDL_Event& e)
 					{
 						//std::cout << "2 Valid swap from (" << fromRow << "," << fromCol << ") to :(" << toRow << "," << toCol << ")" << std::endl;
 						//std::cout << "Update game board, start animations and more" << std::endl;
-						GGameManager::Instance()->swapGameObjects(fromRow, fromCol, toRow, toCol);
-						//userInteractionEnabled = false;
+						//if (GGameManager::Instance()->isPossibleSwap(fromRow, fromCol, toRow, toCol))
+						//{
+							GGameManager::Instance()->swapGameObjects(fromRow, fromCol, toRow, toCol, true);
+							GGameManager::Instance()->registerLastUserSwap(fromRow, fromCol, toRow, toCol);
+							
+						//}//userInteractionEnabled = false;
 						clearAllSwap();
 					}
 					else if (GGameManager::Instance()->isSameBoardCell(fromRow, fromCol, toRow, toCol))

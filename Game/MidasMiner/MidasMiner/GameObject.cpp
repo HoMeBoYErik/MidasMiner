@@ -75,7 +75,9 @@ void GameObject::update(float timeStep)
 		{
 			isAnimating = false;
 			animCurrentTime = 0;
-			std::cout << " Animation ended for gameobject with id "<< this->name << std::endl;
+			//std::cout << " Animation ended for gameobject with id "<< this->name << std::endl;
+			//clamp values to destination
+			setPosition(animDestX, animDestY);
 
 			// Notify end of animation to Game Manager
 			GGameManager::Instance()->endedAnimation();
