@@ -86,6 +86,8 @@ bool Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 #endif
 				return false; // renderer init fail
 			}
+
+
 		}
 		else
 		{
@@ -192,6 +194,8 @@ void Game::render()
 
 	// Draw top part of tunnel last to simulate gems occlusion when falling
 	GSpriteManager::Instance()->drawCropped(sprite_assets::BACKGROUND, 0, 0, 0, 0, 755, 94, m_pRenderer, SDL_FLIP_NONE);
+
+	GSpriteManager::Instance()->drawScoreText(m_pRenderer);
 	
 
 
@@ -216,7 +220,6 @@ void Game::clean()
 
 	GSpriteManager::Instance()->clearTextureMap();
 	delete gemTest;
-
 
 	SDL_DestroyWindow(m_pWindow);
 	SDL_DestroyRenderer(m_pRenderer);

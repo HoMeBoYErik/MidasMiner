@@ -4,6 +4,7 @@
 #include "SpriteManager.h"
 #include "SDL_image.h"
 
+
 SpriteManager* SpriteManager::s_pInstance = 0;
 
 
@@ -34,9 +35,53 @@ bool SpriteManager::load(std::string fileName, int id, SDL_Renderer* pRenderer)
 	return false;
 }
 
+void SpriteManager::updateScore(int newScore)
+{
+	std::string score = "Score: ";
+	score += std::to_string(newScore);
+	updateScoreText(score, mScoreColor, pRenderer);
+}
+
+void SpriteManager::updateScoreText(std::string textureText, SDL_Color textColor, SDL_Renderer* pRenderer)
+{
+	SDL_Surface* pTextSurface = TTF_RenderText_Solid(gFont, textureText.c_str(), textColor);
+
+	if (pTextSurface == NULL)
+	{
+		return;
+	}
+
+	scoreTextWidth = pTextSurface->w;
+	scoreTextHeight = pTextSurface->h;
+
+	scoreText = SDL_CreateTextureFromSurface(pRenderer, pTextSurface);
+	//Enable blending on texture
+	//SDL_SetTextureBlendMode(scoreText, SDL_BLENDMODE_BLEND);
+	SDL_FreeSurface(pTextSurface);
+
+	m_textureMap[sprite_assets::SCORE_TEXT] = scoreText;
+}
+
 bool SpriteManager::init(SDL_Renderer* pRenderer)
 {
-	// TODO add check error control
+	GSpriteManager::Instance()->pRenderer = pRenderer;
+	// Init SDL TTF library
+	TTF_Init();
+
+	gFont = TTF_OpenFont("assets/fonts/Lobster.ttf", 28);
+
+	mScoreColor = { 255, 255, 255 };
+
+	if (gFont == NULL)
+	{
+#ifdef _DEBUG
+		std::cout << SDL_GetError() << std::endl;
+#endif
+		return false;
+	}
+	SDL_Color textColor = { 255, 255, 255, 255 };
+
+	
 	GSpriteManager::Instance()->load("assets/sprites/BackGround.jpg", sprite_assets::BACKGROUND , pRenderer);
 	// Loading gems image assets
 	GSpriteManager::Instance()->load("assets/sprites/Blue.png", sprite_assets::BLUE_GEM, pRenderer);
@@ -50,9 +95,9 @@ bool SpriteManager::init(SDL_Renderer* pRenderer)
 	GSpriteManager::Instance()->load("assets/sprites/PurpleSelected.png", sprite_assets::PURPLE_GEM_SELECTED, pRenderer);
 	GSpriteManager::Instance()->load("assets/sprites/RedSelected.png", sprite_assets::RED_GEM_SELECTED, pRenderer);
 	GSpriteManager::Instance()->load("assets/sprites/YellowSelected.png", sprite_assets::YELLOW_GEM_SELECTED, pRenderer);
-
 	
-
+	GSpriteManager::Instance()->updateScoreText("Score: 0", textColor, pRenderer);
+	
 	
 	return true;
 }
@@ -70,6 +115,11 @@ void SpriteManager::draw(int id, int x, int y, int width, int height, SDL_Render
 	destRect.y = y;
 
 	SDL_RenderCopyEx(pRenderer, m_textureMap[id], &srcRect, &destRect, 0, 0, flip);
+}
+
+void SpriteManager::drawScoreText(SDL_Renderer* pRenderer)
+{
+	draw(sprite_assets::SCORE_TEXT, 10, 10, scoreTextWidth, scoreTextHeight, pRenderer, SDL_FLIP_NONE);
 }
 
 void SpriteManager::drawCropped(int id, int startX, int startY, int x, int y, int width, int height, SDL_Renderer* pRenderer, SDL_RendererFlip flip)
@@ -125,5 +175,19 @@ void SpriteManager::clearTextureMap()
 void SpriteManager::clearFromTextureMap(int id)
 {
 	m_textureMap.erase(id);
+}
+
+void SpriteManager::clean()
+{
+	TTF_CloseFont(gFont);
+	gFont = NULL;
+	
+	free(scoreText);
+	free(timeText);
+
+	scoreText = NULL;
+	timeText = NULL;
+
+	clearTextureMap();
 }
 

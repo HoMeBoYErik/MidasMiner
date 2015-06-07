@@ -69,14 +69,14 @@ public:
 	bool isPossibleSwap(int fromRow, int fromCol, int toRow, int toCol);
 	void registerLastUserSwap(int fromRow, int fromCol, int toRow, int toCol);
 	void handleMatches();
-	void detectChains();
+	bool detectChains();
 	void detectHorizontalMatches();
 	void detectVerticalMatches();	
 	void removeChains();
 	void fillHoles();	
 	void makeGemsFall();
 	void addNewGems();
-	void updateScore();
+	void updateScore(int newScore);
 	void beginNextTurn();
 	
 
@@ -100,6 +100,8 @@ public:
 
 	bool hasToCheckSwap;
 	bool hasToHandleMatches;
+
+	int mScore;
 	
 	/* '0' = empty cell */
 	/* 'b' =  Blue Gem */
@@ -121,9 +123,7 @@ public:
 	std::set<GemChain*> m_detectedVerticalChains;
 
 	std::queue<GameObject*> m_gemFallingAnimationQueue;
-	std::queue<GameObject *> m_reusableGems;
-
-	
+	std::queue<GameObject *> m_reusableGems;	
 
 private:
 	GameManager(){};

@@ -1,6 +1,7 @@
 // GameManager.cpp
 
 #include "GameManager.h"
+#include "SpriteManager.h"
 #include "InputManager.h"
 #include "AudioManager.h"
 #include "GemChain.h"
@@ -30,6 +31,8 @@ bool GameManager::init()
 	populateBoard();
 	detectPossibleSwaps();
 
+	mScore = 0;
+
 	return true;
 }
 
@@ -41,7 +44,8 @@ void GameManager::update(float timestep)
 	}
 
 	if (hasAnimationRunning() && hasToHandleMatches)
-	{
+	{		
+		GInputManager::Instance()->userInteractionEnabled = false;
 		return;
 	}
 
@@ -60,23 +64,16 @@ void GameManager::update(float timestep)
 		if (isPossibleSwap(lastUserSwap))
 		{
 			GAudioManager::Instance()->playSound("swapSuccess", 0);
-			hasToCheckSwap = false;
-
-			//std::cout << "SWAP SUCCESS " << std::endl;
-
+			hasToCheckSwap = false;			
 			// handle matches
 			handleMatches();
 		}
 		else
 		{
 			GAudioManager::Instance()->playSound("swapFailed", 0);
-			// swap things back
-			
+			// swap things back			
 			swapGameObjects(lastUserToRow, lastUserToCol, lastUserFromRow, lastUserFromCol, true);
-
-			hasToCheckSwap = false;
-
-			//std::cout << "SWAP FAIL " << std::endl;
+			hasToCheckSwap = false;			
 		}
 
 		return;
@@ -445,7 +442,7 @@ void GameManager::detectVerticalMatches()
 {
 	m_detectedVerticalChains.clear();
 
-	for (int col = 0; col < BOARD_COLS; col++)
+	for (int col = 0; col < BOARD_COLS; ++col)
 	{
 		for (int row = 0; row < BOARD_ROWS - 2;)
 		{
@@ -473,9 +470,9 @@ void GameManager::detectVerticalMatches()
 void GameManager::handleMatches()
 {
 	// step 1: detect chains
-	detectChains();
+	bool chainDetected = detectChains();
 	// if no more chains exit and give back control to user
-	if ( m_detectedHorizontalChains.empty() && m_detectedVerticalChains.empty() )
+	if ( !chainDetected )
 	{
 		beginNextTurn();
 		return;		
@@ -485,8 +482,8 @@ void GameManager::handleMatches()
 	// step 3: make gems falling down filling holes
 	fillHoles();
 	// step 4: add new gems from top
-	addNewGems();
-
+	addNewGems();	
+	// step 5: recalculate possible swaps for the next round
 	detectPossibleSwaps();
 }
 
@@ -496,12 +493,18 @@ void GameManager::beginNextTurn()
 	GInputManager::Instance()->userInteractionEnabled = true;
 }
 
-void GameManager::detectChains()
+bool GameManager::detectChains()
 {
-	//m_detectedVerticalChains.clear();
-	//m_detectedVerticalChains.clear();
 	detectHorizontalMatches();  // detect all new horizontal chains
 	detectVerticalMatches();	// detect all new vertical chains
+
+	// if we found new chains
+	if (!m_detectedHorizontalChains.empty() || !m_detectedVerticalChains.empty())
+	{
+		return true;
+	}
+	return false;
+
 }
 
 
@@ -514,6 +517,8 @@ void GameManager::removeChains()
 		{
 			removeChainFromBoard(f);			
 			GAudioManager::Instance()->playSound("removeChain", false);
+			updateScore(100);
+
 		}
 	}
 	// remove vertical chains then
@@ -523,6 +528,7 @@ void GameManager::removeChains()
 		{
 			removeChainFromBoard(f);			
 			GAudioManager::Instance()->playSound("removeChain", false);
+			updateScore(100);
 		}
 	}	
 }
@@ -532,26 +538,27 @@ void GameManager::removeChainFromBoard(GemChain* chain)
 {
 	for (auto c : chain->gems)
 	{		
-		// TODO: start remove animations
+		// hide the gem
 		c->isVisible = false;
-		//c->animateScale(c->mScaleX, c->mScaleY, 0, 0, 0.3f); startedAnimation();
+		// TODO: spawn particles and point effect		
 
-		// set to 0 logic board cells
+		// mark the cell as empty in logic representation
 		int row, col;
 		mapPointToBoardCell((int)c->mPosX, (int)c->mPosY, row, col);
 		board[row][col] = board_elems::EMPTY;
 
-		// move gameObjects to a respawn pool to refresh and reuse them
-		// if we formed a T shaped chain, one element is repeated and already null sometimes
+		// move gameObjects to a reusable pool
+		// if we formed a T shaped chain, one element is repeated and is already null
 		if (boardGameObjects[row][col] != NULL)
 		{
-			m_reusableGems.push(boardGameObjects[row][col]);
-			boardGameObjects[row][col] = NULL;
+			m_reusableGems.push(boardGameObjects[row][col]);	//add the gem to a reusable pool of gameobject
+			boardGameObjects[row][col] = NULL;					//mark the cell as empty in data representation
 		}
 		
 	}
 }
 
+// Fill the holes left in the game board with new gems
 void GameManager::fillHoles()
 {
 	for (int col = 0; col < BOARD_COLS; col++)
@@ -596,9 +603,11 @@ void GameManager::fillHoles()
 	makeGemsFall();	
 }
 
-void GameManager::updateScore()
+void GameManager::updateScore(int newScore)
 {
+	mScore += newScore;
 
+	GSpriteManager::Instance()->updateScore(mScore);
 }
 
 void GameManager::makeGemsFall()
@@ -644,40 +653,38 @@ void GameManager::addNewGems()
 
 				GameObject* gem = boardGameObjects[row][col];
 				// update his visual parameters and position depending on gemtype
-				if (gem == NULL)
+				if (gem != NULL)
 				{
-					std::cout << "Something is wrong in many ways" << std::endl;
+					gem->setSprites(gemType);
+
+					// calculate new final position and animation params
+					// put it outside the screen or animate with a delay
+					// add a delay on animation
+
+					// for now do not animate just place
+					int posX, posY; // final destination position
+					mapBoardCellToPoint(row, col, posX, posY);
+
+					gem->animDestX = (float)posX;
+					gem->animDestY = (float)posY;
+
+					gem->animOrigX = static_cast<float>(posX);
+					gem->animOrigY = static_cast<float>(BOARD_RECT.y - BOARD_CELL_Y);
+					gem->mPosX = (float)posX;
+					gem->mPosY = (float)(BOARD_RECT.y - BOARD_CELL_Y);
+
+					boardGameObjects[row][col]->animateBounce(
+						gem->animOrigX,
+						gem->animOrigY,
+						gem->animDestX,
+						gem->animDestY,
+						0.35f,
+						static_cast<float>((BOARD_ROWS - row))*0.035f
+						);
+					GameManager::Instance()->startedAnimation();
+
+					gem->isVisible = true;
 				}
-				gem->setSprites(gemType);
-
-				// calculate new final position and animation params
-				// put it outside the screen or animate with a delay
-				// add a delay on animation
-
-				// for now do not animate just place
-				int posX, posY; // final destination position
-				mapBoardCellToPoint(row, col, posX, posY);
-
-				gem->animDestX = (float)posX;
-				gem->animDestY = (float)posY;
-
-				gem->animOrigX = static_cast<float>(posX);
-				gem->animOrigY = static_cast<float>(BOARD_RECT.y - BOARD_CELL_Y);
-				gem->mPosX = (float)posX;
-				gem->mPosY =(float) (BOARD_RECT.y - BOARD_CELL_Y);
-			
-				boardGameObjects[row][col]->animateBounce(
-					gem->animOrigX,
-					gem->animOrigY,
-					gem->animDestX,
-					gem->animDestY,
-					0.35f,
-					static_cast<float>((BOARD_ROWS - row))*0.035f
-					);
-				GameManager::Instance()->startedAnimation();
-
-
-				boardGameObjects[row][col]->isVisible = true;
 			}
 			else
 			{
@@ -686,7 +693,7 @@ void GameManager::addNewGems()
 		}
 	}
 	
-	//handleMatches();
+	// sort of recursive call to handleMatches to verify if we formed new chains
 	hasToHandleMatches = true;
 }
 
