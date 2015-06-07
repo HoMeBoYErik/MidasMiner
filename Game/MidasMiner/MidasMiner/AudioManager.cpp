@@ -24,8 +24,9 @@ bool AudioManager::init()
 	GAudioManager::Instance()->loadMusic("assets/music/Soundtrack.mp3", "puzzleMusic");	
 	// Load sounds FX
 	GAudioManager::Instance()->loadSound("assets/sfx/Combo1.wav", "combo1");
-	GAudioManager::Instance()->loadSound("assets/sfx/Combo1.wav", "combo2");
-	GAudioManager::Instance()->loadSound("assets/sfx/Combo1.wav", "combo3");
+	GAudioManager::Instance()->loadSound("assets/sfx/Combo2.wav", "combo2");
+	GAudioManager::Instance()->loadSound("assets/sfx/Combo3.wav", "combo3");
+	GAudioManager::Instance()->loadSound("assets/sfx/RemoveChain.wav", "removeChain");
 	GAudioManager::Instance()->loadSound("assets/sfx/SwapSuccess.wav", "swapSuccess");
 	GAudioManager::Instance()->loadSound("assets/sfx/SwapFailed.wav", "swapFailed"); 
 

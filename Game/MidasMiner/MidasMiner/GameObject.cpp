@@ -55,17 +55,17 @@ void GameObject::setScale(float scaleX, float scaleY)
 
 void GameObject::setSelected(bool sel)
 {
-	this->isSelected = sel;
+	isSelected = sel;
 }
 
 void GameObject::setNormalSprite(int normalSpriteId)
 {
-	this->mNormalSpriteId = normalSpriteId;
+	mNormalSpriteId = normalSpriteId;
 }
 
 void GameObject::setSelectedSprite(int selectedSpriteId)
 {
-	this->mSelectedSpriteId = selectedSpriteId;
+	mSelectedSpriteId = selectedSpriteId;
 }
 
 void GameObject::setSprites(Uint8 gemType)
@@ -102,7 +102,7 @@ void GameObject::setSprites(Uint8 gemType)
 	}
 }
 
-void GameObject::animate(float origX, float origY, float destX, float destY, float duration)
+void GameObject::animate(float origX, float origY, float destX, float destY, float duration, float delay)
 {
 	animOrigX = origX;
 	animOrigY = origY;
@@ -110,13 +110,13 @@ void GameObject::animate(float origX, float origY, float destX, float destY, flo
 	animDestY = destY;
 	animTotalTime = duration;
 	isAnimating = true;
-	animCurrentTime = 0;
+	animCurrentTime = 0 - delay;
 }
 
-void GameObject::animateBounce(float origX, float origY, float destX, float destY, float duration)
+void GameObject::animateBounce(float origX, float origY, float destX, float destY, float duration, float delay)
 {
 	doBounce = true;
-	animate(origX, origY, destX, destY, duration);
+	animate(origX, origY, destX, destY, duration, delay);
 }
 
 void GameObject::animateScale(float origX, float origY, float destX, float destY, float duration)
@@ -135,27 +135,31 @@ void GameObject::update(float timeStep)
 	if (isAnimating)
 	{
 		animCurrentTime += timeStep;
-
-		if (doBounce)
-		{
-			setPosition(Bounce::easeOut(animCurrentTime, animOrigX, animDestX - animOrigX, animTotalTime),
-				Bounce::easeOut(animCurrentTime, animOrigY, animDestY - animOrigY, animTotalTime));
-		}
+		// animCurrentTime may be less then zero if animation start with a delay
 		
-		else
-		{
-			setPosition(Quad::easeInOut(animCurrentTime, animOrigX, animDestX - animOrigX, animTotalTime),
-				Quad::easeInOut(animCurrentTime, animOrigY, animDestY - animOrigY, animTotalTime));
+		if (animCurrentTime >= 0)
+		{		
+			if (doBounce)
+			{
+				setPosition(Bounce::easeOut(animCurrentTime, animOrigX, animDestX - animOrigX, animTotalTime),
+					Bounce::easeOut(animCurrentTime, animOrigY, animDestY - animOrigY, animTotalTime));
+			}
+		
+			else
+			{
+				setPosition(Quad::easeInOut(animCurrentTime, animOrigX, animDestX - animOrigX, animTotalTime),
+					Quad::easeInOut(animCurrentTime, animOrigY, animDestY - animOrigY, animTotalTime));
+			}
 		}
 		
 
 		if (animCurrentTime >= animTotalTime)
 		{
-			std::cout << "[" << static_cast<unsigned int>(id) << "] end animation" << std::endl;
+			//std::cout << "[" << static_cast<unsigned int>(id) << "] end animation" << std::endl;
 			isAnimating = false;
 			if (doBounce){ doBounce = false; }//reset bounce effect to false
 			animCurrentTime = 0;
-			std::cout << " Animation ended for gameobject with id " << static_cast<unsigned int>(this->id) << std::endl;
+			//std::cout << " Animation ended for gameobject with id " << static_cast<unsigned int>(this->id) << std::endl;
 			//clamp values to destination
 			setPosition(animDestX, animDestY);
 

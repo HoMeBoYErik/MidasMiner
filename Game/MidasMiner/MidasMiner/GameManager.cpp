@@ -40,8 +40,14 @@ void GameManager::update(float timestep)
 		it->second->update(timestep);
 	}
 
+	if (hasAnimationRunning() && hasToHandleMatches)
+	{
+		return;
+	}
+
 	if (!hasAnimationRunning() && hasToHandleMatches)
 	{
+		GInputManager::Instance()->userInteractionEnabled = false;
 		handleMatches();
 		hasToHandleMatches = false;
 		return;
@@ -49,13 +55,14 @@ void GameManager::update(float timestep)
 
 	if (!hasAnimationRunning() && hasToCheckSwap)
 	{
+		GInputManager::Instance()->userInteractionEnabled = false;
 		// the swap was effective, play a nice sound
 		if (isPossibleSwap(lastUserSwap))
 		{
 			GAudioManager::Instance()->playSound("swapSuccess", 0);
 			hasToCheckSwap = false;
 
-			std::cout << "SWAP SUCCESS " << std::endl;
+			//std::cout << "SWAP SUCCESS " << std::endl;
 
 			// handle matches
 			handleMatches();
@@ -69,8 +76,14 @@ void GameManager::update(float timestep)
 
 			hasToCheckSwap = false;
 
-			std::cout << "SWAP FAIL " << std::endl;
+			//std::cout << "SWAP FAIL " << std::endl;
 		}
+
+		return;
+	}
+	else
+	{
+		GInputManager::Instance()->userInteractionEnabled = true;
 	}
 	
 }
@@ -230,7 +243,7 @@ void GameManager::detectPossibleSwaps()
 			if (gem != NULL)
 			{
 				
-				//Is it possible to swap this cookie with the one on the right ?
+				//Is it possible to swap this gem with the one on the right ?
 				if (col < BOARD_COLS - 1)
 				{
 					GameObject* gemToTheRight = boardGameObjects[row][col + 1];					
@@ -250,7 +263,7 @@ void GameManager::detectPossibleSwaps()
 					}					
 				}
 
-				//Is it possible to swap this cookie with the one below
+				//Is it possible to swap this gem with the one below ?
 				if (row < BOARD_ROWS - 1)
 				{
 					GameObject* gemBelow = boardGameObjects[row+1][col];
@@ -367,12 +380,12 @@ void GameManager::swapGameObjects(int fromRow, int fromCol, int toRow, int toCol
 	{
 		a->animate(a->mPosX, a->mPosY, b->mPosX, b->mPosY, 0.3f); 
 		GGameManager::Instance()->startedAnimation(); 
-		std::cout << " [" << static_cast<unsigned int>(a->id) << "] star anim" << std::endl;
+		//std::cout << " [" << static_cast<unsigned int>(a->id) << "] star anim" << std::endl;
 
 
 		b->animate(b->mPosX, b->mPosY, a->mPosX, a->mPosY, 0.3f); 
 		GGameManager::Instance()->startedAnimation();  
-		std::cout << " [" << static_cast<unsigned int>(b->id) << "] start anim" << std::endl;
+		//std::cout << " [" << static_cast<unsigned int>(b->id) << "] start anim" << std::endl;
 	}
 	// swap directly
 	else
@@ -462,7 +475,7 @@ void GameManager::handleMatches()
 	// step 1: detect chains
 	detectChains();
 	// if no more chains exit and give back control to user
-	if (m_detectedHorizontalChains.empty() && m_detectedVerticalChains.empty())
+	if ( m_detectedHorizontalChains.empty() && m_detectedVerticalChains.empty() )
 	{
 		beginNextTurn();
 		return;		
@@ -473,6 +486,8 @@ void GameManager::handleMatches()
 	fillHoles();
 	// step 4: add new gems from top
 	addNewGems();
+
+	detectPossibleSwaps();
 }
 
 void GameManager::beginNextTurn()
@@ -483,42 +498,36 @@ void GameManager::beginNextTurn()
 
 void GameManager::detectChains()
 {
-	m_detectedVerticalChains.clear();
-	m_detectedVerticalChains.clear();
-
-	detectHorizontalMatches();
-	detectVerticalMatches();
+	//m_detectedVerticalChains.clear();
+	//m_detectedVerticalChains.clear();
+	detectHorizontalMatches();  // detect all new horizontal chains
+	detectVerticalMatches();	// detect all new vertical chains
 }
 
 
 void GameManager::removeChains()
 {
-	// join the two sets together
+	// remove horizontal chains first
 	if (!m_detectedHorizontalChains.empty())
 	{
-		m_detectedHorizontalChains.insert(m_detectedVerticalChains.begin(), m_detectedVerticalChains.end());
-
 		for (auto f : m_detectedHorizontalChains)
 		{
-			removeChainFromBoard(f);
-			// TODO : play a sound
+			removeChainFromBoard(f);			
+			GAudioManager::Instance()->playSound("removeChain", false);
 		}
 	}
-	else if (!m_detectedVerticalChains.empty())
+	// remove vertical chains then
+	if(!m_detectedVerticalChains.empty())
 	{
 		for (auto f : m_detectedVerticalChains)
 		{
-			removeChainFromBoard(f);
-			// TODO : play a sound
+			removeChainFromBoard(f);			
+			GAudioManager::Instance()->playSound("removeChain", false);
 		}
-	}
-	
-	
-
-	
+	}	
 }
 
-// TODO UPDATE CHAINS and clear it before to use it again
+
 void GameManager::removeChainFromBoard(GemChain* chain)
 {
 	for (auto c : chain->gems)
@@ -533,8 +542,13 @@ void GameManager::removeChainFromBoard(GemChain* chain)
 		board[row][col] = board_elems::EMPTY;
 
 		// move gameObjects to a respawn pool to refresh and reuse them
-		m_reusableGems.push(boardGameObjects[row][col]);
-		boardGameObjects[row][col] = NULL;
+		// if we formed a T shaped chain, one element is repeated and already null sometimes
+		if (boardGameObjects[row][col] != NULL)
+		{
+			m_reusableGems.push(boardGameObjects[row][col]);
+			boardGameObjects[row][col] = NULL;
+		}
+		
 	}
 }
 
@@ -589,22 +603,15 @@ void GameManager::updateScore()
 
 void GameManager::makeGemsFall()
 {
-	// if there is something to animate
-	/*if (!m_gemFallingAnimationQueue.empty())
-	{
-		for (auto g : m_gemFallingAnimationQueue)
-		{
-			g->animateBounce(g->animOrigX, g->animOrigY, g->animDestX, g->animDestY, 0.35f); startedAnimation(); std::cout << " Gameobject [" << static_cast<unsigned int>( g->id) << "] started animation" << std::endl;
-		}
-	}*/
-
+	//while there is something to animate	
 	while (!m_gemFallingAnimationQueue.empty())
 	{
-		GameObject* g = m_gemFallingAnimationQueue.front();		
-		g->animateBounce(g->animOrigX, g->animOrigY, g->animDestX, g->animDestY, 0.35f); 
-		GGameManager::Instance()->startedAnimation(); 
-		std::cout << " Gameobject [" << static_cast<unsigned int>(g->id) << "] started animation" << std::endl;
+		GameObject* g = m_gemFallingAnimationQueue.front();
 		m_gemFallingAnimationQueue.pop();
+		g->animateBounce(g->animOrigX, g->animOrigY, g->animDestX, g->animDestY, 0.35f);
+		GGameManager::Instance()->startedAnimation(); 
+		//std::cout << " Gameobject [" << static_cast<unsigned int>(g->id) << "] started animation" << std::endl;
+		
 	}
 }
 
@@ -630,22 +637,51 @@ void GameManager::addNewGems()
 			// we get a reusable gameobject and prepare it to fall back into scene
 			if (!m_reusableGems.empty())
 			{
+				//SDL_assert(boardGameObjects[row][col] == NULL);
 				// copy back this gem to the board in his future new position
 				boardGameObjects[row][col] = m_reusableGems.front();
 				m_reusableGems.pop();
 
+				GameObject* gem = boardGameObjects[row][col];
 				// update his visual parameters and position depending on gemtype
-				boardGameObjects[row][col]->setSprites(gemType);
+				if (gem == NULL)
+				{
+					std::cout << "Something is wrong in many ways" << std::endl;
+				}
+				gem->setSprites(gemType);
 
 				// calculate new final position and animation params
 				// put it outside the screen or animate with a delay
+				// add a delay on animation
 
 				// for now do not animate just place
-				int posX, posY;
+				int posX, posY; // final destination position
 				mapBoardCellToPoint(row, col, posX, posY);
-				boardGameObjects[row][col]->mPosX = (float)posX;
-				boardGameObjects[row][col]->mPosY = (float)posY;
+
+				gem->animDestX = (float)posX;
+				gem->animDestY = (float)posY;
+
+				gem->animOrigX = static_cast<float>(posX);
+				gem->animOrigY = static_cast<float>(BOARD_RECT.y - BOARD_CELL_Y);
+				gem->mPosX = (float)posX;
+				gem->mPosY =(float) (BOARD_RECT.y - BOARD_CELL_Y);
+			
+				boardGameObjects[row][col]->animateBounce(
+					gem->animOrigX,
+					gem->animOrigY,
+					gem->animDestX,
+					gem->animDestY,
+					0.35f,
+					static_cast<float>((BOARD_ROWS - row))*0.035f
+					);
+				GameManager::Instance()->startedAnimation();
+
+
 				boardGameObjects[row][col]->isVisible = true;
+			}
+			else
+			{
+				std::cout << "Out of reusable objects" << std::endl;
 			}
 		}
 	}
@@ -658,14 +694,14 @@ void GameManager::startedAnimation()
 {
 	++mNumOfActiveAnimations;
 
-	std::cout << "Start-> Counter " << static_cast<unsigned int>(mNumOfActiveAnimations) << std::endl;
+	//std::cout << "Start-> Counter " << static_cast<unsigned int>(mNumOfActiveAnimations) << std::endl;
 }
 
 void GameManager::endedAnimation()
 {
 	--mNumOfActiveAnimations;
 	
-	std::cout << "End-> Counter " << static_cast<unsigned int>(mNumOfActiveAnimations) << std::endl;
+	//std::cout << "End-> Counter " << static_cast<unsigned int>(mNumOfActiveAnimations) << std::endl;
 }
 
 bool GameManager::hasAnimationRunning()

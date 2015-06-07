@@ -52,9 +52,9 @@ public:
 	void setScale(float scaleX, float scaleY);
 
 	// Animator
-	void animate(float origX, float origY, float destX, float destY, float duration);
+	void animate(float origX, float origY, float destX, float destY, float duration, float delay = 0);
 	void animateScale(float origX, float origY, float destX, float destY, float duration);
-	void animateBounce(float origX, float origY, float destX, float destY, float duration);
+	void animateBounce(float origX, float origY, float destX, float destY, float duration, float delay = 0);
 	
 	// Renderer 
 	void setSelected(bool sel);

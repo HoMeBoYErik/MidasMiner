@@ -71,14 +71,14 @@ void InputManager::resetSwap()
 
 void InputManager::update(float timestep)
 {
-	if (GGameManager::Instance()->hasAnimationRunning() || GGameManager::Instance()->hasToCheckSwap )
+	/*if (GGameManager::Instance()->hasAnimationRunning() || GGameManager::Instance()->hasToCheckSwap )
 	{
 		userInteractionEnabled = false;
 	}
 	else
 	{
 		userInteractionEnabled = true;
-	}
+	}*/
 }
 
 void InputManager::handleEvent(SDL_Event& e)
