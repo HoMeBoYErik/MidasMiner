@@ -7,8 +7,12 @@
 #include <string>
 #include <map>
 #include <set>
+#include <queue>
 #include "SDL.h"
 #include "GameObject.h"
+#include "SwapPair.h" 
+#include "GemChain.h"
+
 
 static const int BOARD_COLS = 8;
 static const int BOARD_ROWS = 8;
@@ -23,71 +27,16 @@ static const int BOARD_CELL_Y = 45;
 static const Uint8 DIFFERENT_GEMS = 5;
 
 
-
 enum board_elems
 {
 	EMPTY = 0,
-	BLUE_GEM = 1,
-	GREEN_GEM = 2,
-	PURPLE_GEM = 3,
-	RED_GEM = 4,
-	YELLOW_GEM = 5
+	BLUE_GEM_ELEM = 1,
+	GREEN_GEM_ELEM = 2,
+	PURPLE_GEM_ELEM = 3,
+	RED_GEM_ELEM = 4,
+	YELLOW_GEM_ELEM = 5
 };
 
-
-class SwapPair
-{
-public:
-	GameObject* a;
-	GameObject* b;
-
-	SwapPair(){};
-	~SwapPair(){};	
-	
-	SwapPair& SwapPair::operator= (const SwapPair &cSource)
-	{
-		// do the copy
-		a = cSource.a;
-		b = cSource.b;
-
-		// return the existing object
-		return *this;
-	}
-
-	/*bool operator==(SwapPair* other)
-	{
-		if ((this->a->id == other->a->id && this->b->id == other->b->id) ||
-			(this->b->id == other->a->id && this->a->id == other->b->id))
-		{
-			return true;
-		}
-
-		return false;
-	}
-
-	bool operator<(const SwapPair* other)
-	{
-		if (this == other)return false;
-		return true;
-	}*/
-
-};
-
-// Compare functor for SwapPair set
-/*struct swap_compare
-{
-
-	bool operator<(const SwapPair* other)const
-	{
-		
-	}
-
-	bool operator()(const SwapPair* sp1, const SwapPair* sp2)const
-	{
-		return false;
-	}	
-};
-typedef struct swap_compare SwapCompare;*/
 
 class GameManager
 {
@@ -105,7 +54,6 @@ public:
 		return s_pInstance;
 	}
 
-	GameObject* factory(std::string gameObjectType);
 	void registerGameObject(Uint8 id, GameObject *pGameObject);
 
 	bool init();
@@ -120,11 +68,16 @@ public:
 	bool isPossibleSwap(SwapPair* swappable);
 	bool isPossibleSwap(int fromRow, int fromCol, int toRow, int toCol);
 	void registerLastUserSwap(int fromRow, int fromCol, int toRow, int toCol);
-	void detectMatches();
+	void handleMatches();
+	void detectChains();
+	void detectHorizontalMatches();
+	void detectVerticalMatches();	
 	void removeChains();
-	void updateScore();
+	void fillHoles();	
 	void makeGemsFall();
 	void addNewGems();
+	void updateScore();
+	void beginNextTurn();
 	
 
 	// board manipulation methods and accessors
@@ -135,19 +88,27 @@ public:
 	bool isSameBoardCell(int fromRow, int fromCol, int toRow, int toCol);
 	void mapPointToBoardCell(int x, int y, int &row, int &col);
 	void mapBoardCellToPoint(int row, int col, int &x, int &y);
+	void removeChainFromBoard(GemChain *);
+	void removeGemFromBoard(int row, int col);
+	void removeGemFromBoard(GameObject *);
 
+	// Manage the animation counter
+	// If there is an animation active prevent user from interacting
 	void startedAnimation();
 	void endedAnimation();
 	bool hasAnimationRunning();
 
 	bool hasToCheckSwap;
+	bool hasToHandleMatches;
 	
 	/* '0' = empty cell */
 	/* 'b' =  Blue Gem */
 	Uint8 board[BOARD_ROWS][BOARD_COLS]; // logic representation of game board
 	GameObject* boardGameObjects[BOARD_ROWS][BOARD_COLS]; // game object mapping between cells and gems
 	// Add a collection of gameobject to maintain relationships
-	std::map<Uint8, GameObject*> m_GameObjects;
+	std::map<Uint8, GameObject*> m_GameObjects; // access with game object ID
+
+	
 
 	std::set < SwapPair*> m_PossibleSwaps;
 	SwapPair* lastUserSwap;
@@ -155,6 +116,14 @@ public:
 	int lastUserFromCol = 0;
 	int lastUserToRow = 0;
 	int lastUserToCol = 0;
+
+	std::set<GemChain*> m_detectedHorizontalChains;
+	std::set<GemChain*> m_detectedVerticalChains;
+
+	std::queue<GameObject*> m_gemFallingAnimationQueue;
+	std::queue<GameObject *> m_reusableGems;
+
+	
 
 private:
 	GameManager(){};

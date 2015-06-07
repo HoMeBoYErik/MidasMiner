@@ -3,15 +3,13 @@
 #include "GameManager.h"
 #include "InputManager.h"
 #include "AudioManager.h"
+#include "GemChain.h"
 
 GameManager* GameManager::s_pInstance = 0;
 
 Uint8 GameManager::gameObjectCounter = 0;
 
-GameObject* GameManager::factory(std::string gameObjectType)
-{
-	return new GameObject(0, "Test");
-}
+
 
 // Add a new gameobject to the gameobject map
 void GameManager::registerGameObject(Uint8 id, GameObject *pGameObject)
@@ -26,6 +24,7 @@ bool GameManager::init()
 	lastUserSwap->b = NULL;
 
 	hasToCheckSwap = false;
+	hasToHandleMatches = false;
 
 	createNewBoard();
 	populateBoard();
@@ -41,6 +40,13 @@ void GameManager::update(float timestep)
 		it->second->update(timestep);
 	}
 
+	if (!hasAnimationRunning() && hasToHandleMatches)
+	{
+		handleMatches();
+		hasToHandleMatches = false;
+		return;
+	}
+
 	if (!hasAnimationRunning() && hasToCheckSwap)
 	{
 		// the swap was effective, play a nice sound
@@ -50,6 +56,9 @@ void GameManager::update(float timestep)
 			hasToCheckSwap = false;
 
 			std::cout << "SWAP SUCCESS " << std::endl;
+
+			// handle matches
+			handleMatches();
 		}
 		else
 		{
@@ -63,6 +72,7 @@ void GameManager::update(float timestep)
 			std::cout << "SWAP FAIL " << std::endl;
 		}
 	}
+	
 }
 
 void GameManager::render(SDL_Renderer* pRenderer)
@@ -105,43 +115,11 @@ void GameManager::populateBoard()
 		for (int col = 0; col < BOARD_COLS; ++col)
 		{
 			GameObject *go = NULL;
-			
-			// Switch Value Contained board to draw the gem
-			switch ( board[row][col] )
-			{				
-				case BLUE_GEM:
-					go = new GameObject(++GameManager::gameObjectCounter, "BlueGem");
-					go->setNormalSprite("blueGem");
-					go->setSelectedSprite("blueGemSelected");				
-					break;
 
-				case GREEN_GEM:
-					go = new GameObject(++GameManager::gameObjectCounter, "GreenGem");
-					go->setNormalSprite("greenGem");
-					go->setSelectedSprite("greenGemSelected");
-					break;
+			Uint8 gem = board[row][col];
 
-				case PURPLE_GEM:
-					go = new GameObject(++GameManager::gameObjectCounter, "PurpleGem");
-					go->setNormalSprite("purpleGem");
-					go->setSelectedSprite("purpleGemSelected");
-					break;
-
-				case RED_GEM:
-					go = new GameObject(++GameManager::gameObjectCounter, "RedGem");
-					go->setNormalSprite("redGem");
-					go->setSelectedSprite("redGemSelected");
-					break;
-
-				case YELLOW_GEM:
-					go = new GameObject(++GameManager::gameObjectCounter, "YellowGem");
-					go->setNormalSprite("yellowGem");
-					go->setSelectedSprite("yellowGemSelected");
-					break;
-
-				default:
-					break;
-			}
+			go = new GameObject(++GameManager::gameObjectCounter);
+			go->setSprites(gem);			
 
 			// Complete other game object data
 			// SET POSITION
@@ -242,6 +220,8 @@ bool GameManager::hasChainAt(int row, int col)
 
 void GameManager::detectPossibleSwaps()
 {
+	m_PossibleSwaps.clear();
+
 	for (int row = 0; row < BOARD_ROWS; row++)
 	{
 		for (int col = 0; col < BOARD_COLS; col++)
@@ -377,19 +357,30 @@ void GameManager::swapGameObjects(int fromRow, int fromCol, int toRow, int toCol
 	std::swap(board[fromRow][fromCol], board[toRow][toCol]);	
 	std::swap(boardGameObjects[fromRow][fromCol], boardGameObjects[toRow][toCol]);
 
+	if (a == b)
+	{
+		std::cout << " Warning call same object animation multiple times " << std::endl;
+	}
+
 	// Begin animated swap
 	if (animated)
 	{
-		a->animate(a->mPosX, a->mPosY, b->mPosX, b->mPosY, 0.3f); startedAnimation();
-		b->animate(b->mPosX, b->mPosY, a->mPosX, a->mPosY, 0.3f); startedAnimation();
+		a->animate(a->mPosX, a->mPosY, b->mPosX, b->mPosY, 0.3f); 
+		GGameManager::Instance()->startedAnimation(); 
+		std::cout << " [" << static_cast<unsigned int>(a->id) << "] star anim" << std::endl;
+
+
+		b->animate(b->mPosX, b->mPosY, a->mPosX, a->mPosY, 0.3f); 
+		GGameManager::Instance()->startedAnimation();  
+		std::cout << " [" << static_cast<unsigned int>(b->id) << "] start anim" << std::endl;
 	}
 	// swap directly
 	else
 	{
 		int aPosX, aPosY;
-		aPosX = a->mPosX; aPosY = a->mPosY;
-		a->setPosition(b->mPosX, b->mPosY);
-		b->setPosition(aPosX, aPosY);
+		aPosX =(int) a->mPosX; aPosY = (int) a->mPosY;
+		a->setPosition((float)b->mPosX, (float)b->mPosY);
+		b->setPosition((float)aPosX, (float) aPosY);
 	}	
 }
 
@@ -406,14 +397,189 @@ void GameManager::registerLastUserSwap(int fromRow, int fromCol, int toRow, int 
 }
 
 
-void GameManager::detectMatches()
+void GameManager::detectHorizontalMatches()
 {
+	m_detectedHorizontalChains.clear();
+	
+	for (int row = 0; row < BOARD_ROWS; row++)
+	{
+		for (int col = 0; col < BOARD_COLS - 2;)
+		{
+			Uint8 matchType = board[row][col];
+			if (board[row][col + 1] == matchType
+				&& board[row][col + 2] == matchType) 
+			{
+				GemChain* chain = new GemChain();
+				chain->chainType = ChainTypeHorizontal;
+				
+				do 
+				{
+					chain->addGem(boardGameObjects[row][col]);
+					col += 1;
+				} while (col < BOARD_COLS && board[row][col] == matchType);
 
+				// add the chain to current detected chains
+				m_detectedHorizontalChains.insert(chain);
+				continue;
+			}
+			col += 1;
+		}
+	}
+ // result is saved in m_detectedHorizontalChains
 }
+
+void GameManager::detectVerticalMatches()
+{
+	m_detectedVerticalChains.clear();
+
+	for (int col = 0; col < BOARD_COLS; col++)
+	{
+		for (int row = 0; row < BOARD_ROWS - 2;)
+		{
+			Uint8 matchType = board[row][col];
+			if (board[row + 1][col] == matchType
+				&& board[row + 2][col] == matchType)
+			{
+				GemChain* chain = new GemChain();
+				chain->chainType = ChainTypeVertical;
+				do
+				{
+					chain->addGem(boardGameObjects[row][col]);
+					row += 1;
+				} while (row < BOARD_ROWS && board[row][col] == matchType);
+
+				// add the chain to current detected chains
+				m_detectedVerticalChains.insert(chain);
+				continue;
+			}
+			row += 1;
+		}
+	}
+}
+
+void GameManager::handleMatches()
+{
+	// step 1: detect chains
+	detectChains();
+	// if no more chains exit and give back control to user
+	if (m_detectedHorizontalChains.empty() && m_detectedVerticalChains.empty())
+	{
+		beginNextTurn();
+		return;		
+	}
+	// step 2: if any, remove gem chains
+	removeChains();
+	// step 3: make gems falling down filling holes
+	fillHoles();
+	// step 4: add new gems from top
+	addNewGems();
+}
+
+void GameManager::beginNextTurn()
+{
+	detectPossibleSwaps();
+	GInputManager::Instance()->userInteractionEnabled = true;
+}
+
+void GameManager::detectChains()
+{
+	m_detectedVerticalChains.clear();
+	m_detectedVerticalChains.clear();
+
+	detectHorizontalMatches();
+	detectVerticalMatches();
+}
+
 
 void GameManager::removeChains()
 {
+	// join the two sets together
+	if (!m_detectedHorizontalChains.empty())
+	{
+		m_detectedHorizontalChains.insert(m_detectedVerticalChains.begin(), m_detectedVerticalChains.end());
 
+		for (auto f : m_detectedHorizontalChains)
+		{
+			removeChainFromBoard(f);
+			// TODO : play a sound
+		}
+	}
+	else if (!m_detectedVerticalChains.empty())
+	{
+		for (auto f : m_detectedVerticalChains)
+		{
+			removeChainFromBoard(f);
+			// TODO : play a sound
+		}
+	}
+	
+	
+
+	
+}
+
+// TODO UPDATE CHAINS and clear it before to use it again
+void GameManager::removeChainFromBoard(GemChain* chain)
+{
+	for (auto c : chain->gems)
+	{		
+		// TODO: start remove animations
+		c->isVisible = false;
+		//c->animateScale(c->mScaleX, c->mScaleY, 0, 0, 0.3f); startedAnimation();
+
+		// set to 0 logic board cells
+		int row, col;
+		mapPointToBoardCell((int)c->mPosX, (int)c->mPosY, row, col);
+		board[row][col] = board_elems::EMPTY;
+
+		// move gameObjects to a respawn pool to refresh and reuse them
+		m_reusableGems.push(boardGameObjects[row][col]);
+		boardGameObjects[row][col] = NULL;
+	}
+}
+
+void GameManager::fillHoles()
+{
+	for (int col = 0; col < BOARD_COLS; col++)
+	{
+		for (int row = BOARD_ROWS - 1; row > 0; row--)
+		{
+			// if this is a hole
+			if (board[row][col] == board_elems::EMPTY)
+			{	// try to make gems above fall down
+				for (int lookup = row - 1; lookup >= 0; lookup--)
+				{					
+					if (board[lookup][col] != board_elems::EMPTY)
+					{
+						// move down the gem one cell
+						board[row][col] = board[lookup][col];
+						// move down game object
+						boardGameObjects[row][col] = boardGameObjects[lookup][col];
+						
+						// update its animation position so it's prepared for animation
+						boardGameObjects[row][col]->animOrigX = boardGameObjects[row][col]->mPosX;
+						boardGameObjects[row][col]->animOrigY = boardGameObjects[row][col]->mPosY;
+						
+						int destX, destY;
+						mapBoardCellToPoint(row, col, destX, destY);
+						boardGameObjects[row][col]->animDestX = (float) destX;
+						boardGameObjects[row][col]->animDestY = (float) destY;
+						// copy the gameobject to an array of objects to animate
+						m_gemFallingAnimationQueue.push(boardGameObjects[row][col]);
+						
+						// mark the new empty cell
+						board[lookup][col] = board_elems::EMPTY;
+						boardGameObjects[lookup][col] = NULL;
+
+						break; // gem moved down, no further scan for this cell
+					}					
+				}
+			}
+		}
+	}
+
+	// finally start gems fall animation
+	makeGemsFall();	
 }
 
 void GameManager::updateScore()
@@ -423,23 +589,83 @@ void GameManager::updateScore()
 
 void GameManager::makeGemsFall()
 {
+	// if there is something to animate
+	/*if (!m_gemFallingAnimationQueue.empty())
+	{
+		for (auto g : m_gemFallingAnimationQueue)
+		{
+			g->animateBounce(g->animOrigX, g->animOrigY, g->animDestX, g->animDestY, 0.35f); startedAnimation(); std::cout << " Gameobject [" << static_cast<unsigned int>( g->id) << "] started animation" << std::endl;
+		}
+	}*/
 
+	while (!m_gemFallingAnimationQueue.empty())
+	{
+		GameObject* g = m_gemFallingAnimationQueue.front();		
+		g->animateBounce(g->animOrigX, g->animOrigY, g->animDestX, g->animDestY, 0.35f); 
+		GGameManager::Instance()->startedAnimation(); 
+		std::cout << " Gameobject [" << static_cast<unsigned int>(g->id) << "] started animation" << std::endl;
+		m_gemFallingAnimationQueue.pop();
+	}
 }
 
 void GameManager::addNewGems()
 {
+	Uint8 gemType = board_elems::EMPTY;
 
+	for (int col = 0; col < BOARD_COLS; col++)
+	{
+		for (int row = 0; row < BOARD_ROWS && board[row][col] == 0; row++)
+		{
+			Uint8 newGemType;
+			do
+			{
+				newGemType = 1 + (Uint8)rand() % DIFFERENT_GEMS;
+			} while (newGemType == gemType);
+			gemType = newGemType; //avoid too many equal gems				
+
+			// and we update the logic
+			board[row][col] = gemType;
+
+			// now that we have a new gem type to insert
+			// we get a reusable gameobject and prepare it to fall back into scene
+			if (!m_reusableGems.empty())
+			{
+				// copy back this gem to the board in his future new position
+				boardGameObjects[row][col] = m_reusableGems.front();
+				m_reusableGems.pop();
+
+				// update his visual parameters and position depending on gemtype
+				boardGameObjects[row][col]->setSprites(gemType);
+
+				// calculate new final position and animation params
+				// put it outside the screen or animate with a delay
+
+				// for now do not animate just place
+				int posX, posY;
+				mapBoardCellToPoint(row, col, posX, posY);
+				boardGameObjects[row][col]->mPosX = (float)posX;
+				boardGameObjects[row][col]->mPosY = (float)posY;
+				boardGameObjects[row][col]->isVisible = true;
+			}
+		}
+	}
+	
+	//handleMatches();
+	hasToHandleMatches = true;
 }
 
 void GameManager::startedAnimation()
 {
 	++mNumOfActiveAnimations;
 
+	std::cout << "Start-> Counter " << static_cast<unsigned int>(mNumOfActiveAnimations) << std::endl;
 }
 
 void GameManager::endedAnimation()
 {
-	--mNumOfActiveAnimations;	
+	--mNumOfActiveAnimations;
+	
+	std::cout << "End-> Counter " << static_cast<unsigned int>(mNumOfActiveAnimations) << std::endl;
 }
 
 bool GameManager::hasAnimationRunning()

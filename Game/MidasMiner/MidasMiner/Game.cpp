@@ -185,13 +185,13 @@ void Game::render()
 	//m_pGameStateMachine->render();
 	
 	// Draw bottom part of the tunnel first	
-	GSpriteManager::Instance()->drawCropped("background", 0, 94, 0, 94, 755, 506, m_pRenderer, SDL_FLIP_NONE);
+	GSpriteManager::Instance()->drawCropped(sprite_assets::BACKGROUND, 0, 94, 0, 94, 755, 506, m_pRenderer, SDL_FLIP_NONE);
 
 	// Draw board of GEMS
 	GGameManager::Instance()->render(m_pRenderer);
 
 	// Draw top part of tunnel last to simulate gems occlusion when falling
-	GSpriteManager::Instance()->drawCropped("background", 0, 0, 0, 0, 755, 94, m_pRenderer, SDL_FLIP_NONE);
+	GSpriteManager::Instance()->drawCropped(sprite_assets::BACKGROUND, 0, 0, 0, 0, 755, 94, m_pRenderer, SDL_FLIP_NONE);
 	
 
 

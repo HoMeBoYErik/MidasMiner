@@ -6,7 +6,9 @@
 
 SpriteManager* SpriteManager::s_pInstance = 0;
 
-bool SpriteManager::load(std::string fileName, std::string id, SDL_Renderer* pRenderer)
+
+
+bool SpriteManager::load(std::string fileName, int id, SDL_Renderer* pRenderer)
 {
 	SDL_Surface* pTempSurface = IMG_Load(fileName.c_str());
 
@@ -35,27 +37,27 @@ bool SpriteManager::load(std::string fileName, std::string id, SDL_Renderer* pRe
 bool SpriteManager::init(SDL_Renderer* pRenderer)
 {
 	// TODO add check error control
-	GSpriteManager::Instance()->load("assets/sprites/BackGround.jpg", "background", pRenderer);
+	GSpriteManager::Instance()->load("assets/sprites/BackGround.jpg", sprite_assets::BACKGROUND , pRenderer);
 	// Loading gems image assets
-	GSpriteManager::Instance()->load("assets/sprites/Blue.png", "blueGem", pRenderer);
-	GSpriteManager::Instance()->load("assets/sprites/Green.png", "greenGem", pRenderer);
-	GSpriteManager::Instance()->load("assets/sprites/Purple.png", "purpleGem", pRenderer);
-	GSpriteManager::Instance()->load("assets/sprites/Red.png", "redGem", pRenderer);
-	GSpriteManager::Instance()->load("assets/sprites/Yellow.png", "yellowGem", pRenderer);
+	GSpriteManager::Instance()->load("assets/sprites/Blue.png", sprite_assets::BLUE_GEM, pRenderer);
+	GSpriteManager::Instance()->load("assets/sprites/Green.png", sprite_assets::GREEN_GEM, pRenderer);
+	GSpriteManager::Instance()->load("assets/sprites/Purple.png", sprite_assets::PURPLE_GEM, pRenderer);
+	GSpriteManager::Instance()->load("assets/sprites/Red.png", sprite_assets::RED_GEM, pRenderer);
+	GSpriteManager::Instance()->load("assets/sprites/Yellow.png", sprite_assets::YELLOW_GEM, pRenderer);
 	// Loading gems in selected state assets
-	GSpriteManager::Instance()->load("assets/sprites/BlueSelected.png", "blueGemSelected", pRenderer);
-	GSpriteManager::Instance()->load("assets/sprites/GreenSelected.png", "greenGemSelected", pRenderer);
-	GSpriteManager::Instance()->load("assets/sprites/PurpleSelected.png", "purpleGemSelected", pRenderer);
-	GSpriteManager::Instance()->load("assets/sprites/RedSelected.png", "redGemSelected", pRenderer);
-	GSpriteManager::Instance()->load("assets/sprites/YellowSelected.png", "yellowGemSelected", pRenderer);
+	GSpriteManager::Instance()->load("assets/sprites/BlueSelected.png", sprite_assets::BLUE_GEM_SELECTED, pRenderer);
+	GSpriteManager::Instance()->load("assets/sprites/GreenSelected.png", sprite_assets::GREEN_GEM_SELECTED, pRenderer);
+	GSpriteManager::Instance()->load("assets/sprites/PurpleSelected.png", sprite_assets::PURPLE_GEM_SELECTED, pRenderer);
+	GSpriteManager::Instance()->load("assets/sprites/RedSelected.png", sprite_assets::RED_GEM_SELECTED, pRenderer);
+	GSpriteManager::Instance()->load("assets/sprites/YellowSelected.png", sprite_assets::YELLOW_GEM_SELECTED, pRenderer);
 
-	GSpriteManager::Instance()->defaultSpriteId = std::string("blueGem");
+	
 
 	
 	return true;
 }
 
-void SpriteManager::draw(std::string id, int x, int y, int width, int height, SDL_Renderer* pRenderer, SDL_RendererFlip flip)
+void SpriteManager::draw(int id, int x, int y, int width, int height, SDL_Renderer* pRenderer, SDL_RendererFlip flip)
 {
 	SDL_Rect srcRect;
 	SDL_Rect destRect;
@@ -70,7 +72,7 @@ void SpriteManager::draw(std::string id, int x, int y, int width, int height, SD
 	SDL_RenderCopyEx(pRenderer, m_textureMap[id], &srcRect, &destRect, 0, 0, flip);
 }
 
-void SpriteManager::drawCropped(std::string id, int startX, int startY, int x, int y, int width, int height, SDL_Renderer* pRenderer, SDL_RendererFlip flip)
+void SpriteManager::drawCropped(int id, int startX, int startY, int x, int y, int width, int height, SDL_Renderer* pRenderer, SDL_RendererFlip flip)
 {
 	SDL_Rect srcRect;
 	SDL_Rect destRect;
@@ -85,7 +87,7 @@ void SpriteManager::drawCropped(std::string id, int startX, int startY, int x, i
 	SDL_RenderCopyEx(pRenderer, m_textureMap[id], &srcRect, &destRect, 0, 0, flip);
 }
 
-void SpriteManager::drawFrame(std::string id, int x, int y, int width, int height, int currentRow, int currentFrame, SDL_Renderer *pRenderer, double angle, int alpha, SDL_RendererFlip flip)
+void SpriteManager::drawFrame(int id, int x, int y, int width, int height, int currentRow, int currentFrame, SDL_Renderer *pRenderer, double angle, int alpha, SDL_RendererFlip flip)
 {
 	SDL_Rect srcRect;
 	SDL_Rect destRect;
@@ -100,7 +102,7 @@ void SpriteManager::drawFrame(std::string id, int x, int y, int width, int heigh
 	SDL_RenderCopyEx(pRenderer, m_textureMap[id], &srcRect, &destRect, angle, 0, flip);
 }
 
-void SpriteManager::drawTile(std::string id, int margin, int spacing, int x, int y, int width, int height, int currentRow, int currentFrame, SDL_Renderer *pRenderer)
+void SpriteManager::drawTile(int id, int margin, int spacing, int x, int y, int width, int height, int currentRow, int currentFrame, SDL_Renderer *pRenderer)
 {
 	SDL_Rect srcRect;
 	SDL_Rect destRect;
@@ -120,7 +122,7 @@ void SpriteManager::clearTextureMap()
 	m_textureMap.clear();
 }
 
-void SpriteManager::clearFromTextureMap(std::string id)
+void SpriteManager::clearFromTextureMap(int id)
 {
 	m_textureMap.erase(id);
 }

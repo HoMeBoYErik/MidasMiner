@@ -9,6 +9,22 @@
 #include <map>
 #include "SDL.h"
 
+enum sprite_assets
+{
+	BACKGROUND = 1,
+	BLUE_GEM = 2,
+	BLUE_GEM_SELECTED = 3,
+	GREEN_GEM = 4,
+	GREEN_GEM_SELECTED = 5,
+	PURPLE_GEM = 6,
+	PURPLE_GEM_SELECTED = 7,
+	RED_GEM = 8,
+	RED_GEM_SELECTED = 9,
+	YELLOW_GEM = 10,
+	YELLOW_GEM_SELECTED = 11
+};
+
+
 class SpriteManager
 {
 public:
@@ -25,19 +41,19 @@ public:
 	}
 
 	bool init(SDL_Renderer* pRenderer);
-	bool load(std::string fileName, std::string id, SDL_Renderer* pRenderer);
+	bool load(std::string fileName, int id, SDL_Renderer* pRenderer);
 
 	void clearTextureMap();
-	void clearFromTextureMap(std::string id);
+	void clearFromTextureMap(int id);
 
-	void draw(std::string id, int x, int y, int width, int height, SDL_Renderer* pRenderer, SDL_RendererFlip flip = SDL_FLIP_NONE);
-	void drawCropped(std::string id, int startX, int startY, int x, int y, int width, int height, SDL_Renderer* pRenderer, SDL_RendererFlip flip);
-	void drawFrame(std::string id, int x, int y, int width, int height, int currentRow, int currentFrame, SDL_Renderer* pRenderer, double angle, int alpha, SDL_RendererFlip flip = SDL_FLIP_NONE);
-	void drawTile(std::string id, int margin, int spacing, int x, int y, int width, int height, int currentRow, int currentFrame, SDL_Renderer *pRenderer);
+	void draw(int id, int x, int y, int width, int height, SDL_Renderer* pRenderer, SDL_RendererFlip flip = SDL_FLIP_NONE);
+	void drawCropped(int id, int startX, int startY, int x, int y, int width, int height, SDL_Renderer* pRenderer, SDL_RendererFlip flip);
+	void drawFrame(int id, int x, int y, int width, int height, int currentRow, int currentFrame, SDL_Renderer* pRenderer, double angle, int alpha, SDL_RendererFlip flip = SDL_FLIP_NONE);
+	void drawTile(int id, int margin, int spacing, int x, int y, int width, int height, int currentRow, int currentFrame, SDL_Renderer *pRenderer);
 
-	std::map<std::string, SDL_Texture*> getTextureMap() { return m_textureMap; }
+	std::map<int, SDL_Texture*> getTextureMap() { return m_textureMap; }
 
-	std::string defaultSpriteId;
+	
 
 private:
 
@@ -47,7 +63,7 @@ private:
 	SpriteManager(const SpriteManager&);
 	SpriteManager& operator=(const SpriteManager&);
 
-	std::map<std::string, SDL_Texture*> m_textureMap;
+	std::map<int, SDL_Texture*> m_textureMap;
 
 	static SpriteManager* s_pInstance;
 };
