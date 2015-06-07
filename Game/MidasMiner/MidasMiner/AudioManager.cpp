@@ -29,6 +29,7 @@ bool AudioManager::init()
 	GAudioManager::Instance()->loadSound("assets/sfx/RemoveChain.wav", "removeChain");
 	GAudioManager::Instance()->loadSound("assets/sfx/SwapSuccess.wav", "swapSuccess");
 	GAudioManager::Instance()->loadSound("assets/sfx/SwapFailed.wav", "swapFailed"); 
+	GAudioManager::Instance()->loadSound("assets/sfx/GemLand.wav", "gemLand");
 
 	return true;
 }

@@ -5,6 +5,7 @@
 #include "Back.h"
 #include "Bounce.h"
 #include "GameManager.h"
+#include "AudioManager.h"
 
 
 GameObject::GameObject(Uint8 id) : GameObject(id, 0.0f, 0.0f){}
@@ -23,6 +24,7 @@ GameObject::GameObject(Uint8 id, float posX, float posY)
 	isAnimating = false;
 	isAnimatingScale = false;
 	doBounce = false;
+	hasLanded = false;
 	mVelX = mVelY = 0.0f;					// set start velocity to 0
 	animOrigX = animOrigY = animDestX = animDestY = 0.0f;	// set animation params to 0
 	animOrigScaleX = animOrigScaleY = animDestScaleX = animDestScaleY = 1.0f;	// set animation scale params to 1
@@ -116,6 +118,7 @@ void GameObject::animate(float origX, float origY, float destX, float destY, flo
 void GameObject::animateBounce(float origX, float origY, float destX, float destY, float duration, float delay)
 {
 	doBounce = true;
+	hasLanded = false;
 	animate(origX, origY, destX, destY, duration, delay);
 }
 
@@ -143,6 +146,12 @@ void GameObject::update(float timeStep)
 			{
 				setPosition(Bounce::easeOut(animCurrentTime, animOrigX, animDestX - animOrigX, animTotalTime),
 					Bounce::easeOut(animCurrentTime, animOrigY, animDestY - animOrigY, animTotalTime));
+
+				if (!hasLanded && (Bounce::easeOut(animCurrentTime, animOrigY, animDestY - animOrigY, animTotalTime) > animDestY - animOrigY))
+				{
+					hasLanded = true;
+					GAudioManager::Instance()->playSound("gemLand", false);
+				}
 			}
 		
 			else
@@ -162,7 +171,7 @@ void GameObject::update(float timeStep)
 			//std::cout << " Animation ended for gameobject with id " << static_cast<unsigned int>(this->id) << std::endl;
 			//clamp values to destination
 			setPosition(animDestX, animDestY);
-
+			
 			// Notify end of animation to Game Manager
 			GGameManager::Instance()->endedAnimation();
 		}

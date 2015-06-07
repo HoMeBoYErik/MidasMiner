@@ -26,6 +26,7 @@ public:
 	float animTotalTime;
 	float animCurrentTime;
 	bool doBounce; // if true animate the movement with a bounce effect
+	bool hasLanded; // bool to determine when to reproduce bounce sound effect
 
 	bool isAnimatingScale;
 	float animScaleTotalTime;
