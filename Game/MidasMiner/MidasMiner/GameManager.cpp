@@ -32,12 +32,49 @@ bool GameManager::init()
 	detectPossibleSwaps();
 
 	mScore = 0;
+	mGameTime = MATCH_TIME; // in seconds
+	isGameRunning = true;
+	hasTimeWarning = false;
 
 	return true;
 }
 
 void GameManager::update(float timestep)
 {
+	// update game timer
+	if (isGameRunning)
+	{
+		if (mGameTime <= 0)
+		{
+			isGameRunning = false;
+			//GInputManager::Instance()->userInteractionEnabled = false;
+		}
+
+		std::string gameTime = "Time: ";
+		gameTime += std::to_string(static_cast<int>(mGameTime / MATCH_TIME));
+		
+		if ( (static_cast<int>(mGameTime) % MATCH_TIME) >= 10 ||
+			static_cast<int>(mGameTime) == MATCH_TIME)
+		{ 
+			gameTime += ":"; 
+		}
+		else
+		{ 
+			if (!hasTimeWarning)
+			{
+				hasTimeWarning = true;
+				GAudioManager::Instance()->playSound("timeWarning", -1);
+			}
+			gameTime += ":0";  
+		}
+		
+		gameTime += std::to_string(static_cast<int>(mGameTime) % MATCH_TIME);
+
+		GSpriteManager::Instance()->updateGameTime(gameTime);
+		
+		mGameTime -= timestep;
+	}
+
 	for (auto it = m_GameObjects.begin(); it != m_GameObjects.end(); ++it)
 	{
 		it->second->update(timestep);

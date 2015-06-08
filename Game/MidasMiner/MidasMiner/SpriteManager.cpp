@@ -62,6 +62,32 @@ void SpriteManager::updateScoreText(std::string textureText, SDL_Color textColor
 	m_textureMap[sprite_assets::SCORE_TEXT] = scoreText;
 }
 
+void SpriteManager::updateGameTime(std::string gameTime)
+{
+	
+	updateGameTimeText(gameTime, mTimerColor, pRenderer);
+}
+
+void SpriteManager::updateGameTimeText(std::string textureText, SDL_Color textColor, SDL_Renderer* pRenderer)
+{
+	SDL_Surface* pTextSurface = TTF_RenderText_Solid(gFont, textureText.c_str(), textColor);
+
+	if (pTextSurface == NULL)
+	{
+		return;
+	}
+
+	timeTextWidth = pTextSurface->w;
+	timeTextHeight = pTextSurface->h;
+
+	timeText = SDL_CreateTextureFromSurface(pRenderer, pTextSurface);
+	//Enable blending on texture
+	//SDL_SetTextureBlendMode(scoreText, SDL_BLENDMODE_BLEND);
+	SDL_FreeSurface(pTextSurface);
+
+	m_textureMap[sprite_assets::TIME_TEXT] = timeText;
+}
+
 bool SpriteManager::init(SDL_Renderer* pRenderer)
 {
 	GSpriteManager::Instance()->pRenderer = pRenderer;
@@ -71,6 +97,8 @@ bool SpriteManager::init(SDL_Renderer* pRenderer)
 	gFont = TTF_OpenFont("assets/fonts/Lobster.ttf", 28);
 
 	mScoreColor = { 255, 255, 255 };
+	mTimerColor = { 255, 255, 255 };
+	mTimerWarningColor = { 255, 0, 0 };
 
 	if (gFont == NULL)
 	{
@@ -79,7 +107,7 @@ bool SpriteManager::init(SDL_Renderer* pRenderer)
 #endif
 		return false;
 	}
-	SDL_Color textColor = { 255, 255, 255, 255 };
+	
 
 	
 	GSpriteManager::Instance()->load("assets/sprites/BackGround.jpg", sprite_assets::BACKGROUND , pRenderer);
@@ -96,7 +124,8 @@ bool SpriteManager::init(SDL_Renderer* pRenderer)
 	GSpriteManager::Instance()->load("assets/sprites/RedSelected.png", sprite_assets::RED_GEM_SELECTED, pRenderer);
 	GSpriteManager::Instance()->load("assets/sprites/YellowSelected.png", sprite_assets::YELLOW_GEM_SELECTED, pRenderer);
 	
-	GSpriteManager::Instance()->updateScoreText("Score: 0", textColor, pRenderer);
+	GSpriteManager::Instance()->updateScoreText("Score: 0", mScoreColor, pRenderer);
+	GSpriteManager::Instance()->updateGameTimeText("Time Left: 1:00", mTimerColor, pRenderer);
 	
 	
 	return true;
@@ -120,6 +149,11 @@ void SpriteManager::draw(int id, int x, int y, int width, int height, SDL_Render
 void SpriteManager::drawScoreText(SDL_Renderer* pRenderer)
 {
 	draw(sprite_assets::SCORE_TEXT, 10, 10, scoreTextWidth, scoreTextHeight, pRenderer, SDL_FLIP_NONE);
+}
+
+void SpriteManager::drawTimeText(SDL_Renderer* pRenderer)
+{
+	draw(sprite_assets::TIME_TEXT, 10, 50, timeTextWidth, timeTextHeight, pRenderer, SDL_FLIP_NONE);
 }
 
 void SpriteManager::drawCropped(int id, int startX, int startY, int x, int y, int width, int height, SDL_Renderer* pRenderer, SDL_RendererFlip flip)

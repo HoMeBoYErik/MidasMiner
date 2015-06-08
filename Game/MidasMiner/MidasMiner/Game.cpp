@@ -196,6 +196,7 @@ void Game::render()
 	GSpriteManager::Instance()->drawCropped(sprite_assets::BACKGROUND, 0, 0, 0, 0, 755, 94, m_pRenderer, SDL_FLIP_NONE);
 
 	GSpriteManager::Instance()->drawScoreText(m_pRenderer);
+	GSpriteManager::Instance()->drawTimeText(m_pRenderer);
 	
 
 

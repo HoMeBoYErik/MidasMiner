@@ -26,6 +26,8 @@ static const int BOARD_CELL_Y = 45;
 
 static const Uint8 DIFFERENT_GEMS = 5;
 
+static const int MATCH_TIME = 60;
+
 
 enum board_elems
 {
@@ -102,6 +104,9 @@ public:
 	bool hasToHandleMatches;
 
 	int mScore;
+	float mGameTime;
+	bool isGameRunning;
+	bool hasTimeWarning;
 	
 	/* '0' = empty cell */
 	/* 'b' =  Blue Gem */

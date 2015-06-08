@@ -23,7 +23,8 @@ enum sprite_assets
 	RED_GEM_SELECTED = 9,
 	YELLOW_GEM = 10,
 	YELLOW_GEM_SELECTED = 11,
-	SCORE_TEXT = 12
+	SCORE_TEXT = 12,
+	TIME_TEXT = 13
 };
 
 
@@ -42,25 +43,28 @@ public:
 		return s_pInstance;
 	}
 
+	std::map<int, SDL_Texture*> getTextureMap() { return m_textureMap; }
+
+	// Init function
 	bool init(SDL_Renderer* pRenderer);
+	// Resource loader function to load images into textures in memory
 	bool load(std::string fileName, int id, SDL_Renderer* pRenderer);
-	
-
-	void clearTextureMap();
-	void clearFromTextureMap(int id);
-
+	// Drawing Functions
 	void draw(int id, int x, int y, int width, int height, SDL_Renderer* pRenderer, SDL_RendererFlip flip = SDL_FLIP_NONE);
 	void drawCropped(int id, int startX, int startY, int x, int y, int width, int height, SDL_Renderer* pRenderer, SDL_RendererFlip flip);
 	void drawFrame(int id, int x, int y, int width, int height, int currentRow, int currentFrame, SDL_Renderer* pRenderer, double angle, int alpha, SDL_RendererFlip flip = SDL_FLIP_NONE);
 	void drawTile(int id, int margin, int spacing, int x, int y, int width, int height, int currentRow, int currentFrame, SDL_Renderer *pRenderer);
+	// GUI Drawing Functions
 	void drawScoreText(SDL_Renderer* pRenderer);
-
-	void updateScore(int newScore);
-
-	std::map<int, SDL_Texture*> getTextureMap() { return m_textureMap; }
-
-	void clean();
+	void drawTimeText(SDL_Renderer* pRenderer);
 	
+	// Setter functions to update the GUI
+	void updateScore(int newScore);
+	void updateGameTime(std::string time);
+
+	void clearTextureMap();
+	void clearFromTextureMap(int id);
+	void clean();	
 
 private:
 
@@ -70,22 +74,26 @@ private:
 	SpriteManager(const SpriteManager&);
 	SpriteManager& operator=(const SpriteManager&);
 
+	static SpriteManager* s_pInstance;
+
 	SDL_Renderer* pRenderer;
 
 	void updateScoreText(std::string textureText, SDL_Color textColor, SDL_Renderer* pRenderer);
+	void updateGameTimeText(std::string textureText, SDL_Color textColor, SDL_Renderer* pRenderer);
 
+	// Container of all loaded sprite assets
 	std::map<int, SDL_Texture*> m_textureMap;
+	
+	// GUI Sprites
 	SDL_Texture* scoreText;
 	int scoreTextWidth, scoreTextHeight;
 	SDL_Texture* timeText;
+	int timeTextWidth, timeTextHeight;	
 	//Globally used font
 	TTF_Font *gFont = NULL;
-
 	SDL_Color mScoreColor;
-	
-	
-
-	static SpriteManager* s_pInstance;
+	SDL_Color mTimerColor;	
+	SDL_Color mTimerWarningColor;
 };
 
 typedef SpriteManager GSpriteManager;
