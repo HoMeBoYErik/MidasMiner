@@ -449,10 +449,12 @@ void GameManager::swapGameObjects(int fromRow, int fromCol, int toRow, int toCol
 	std::swap(board[fromRow][fromCol], board[toRow][toCol]);	
 	std::swap(boardGameObjects[fromRow][fromCol], boardGameObjects[toRow][toCol]);
 
+#ifdef _DEBUG
 	if (a == b)
 	{
 		std::cout << " Warning call same object animation multiple times " << std::endl;
 	}
+#endif
 
 	// Begin animated swap
 	if (animated)

@@ -1,5 +1,8 @@
 //
 // AudioManager.h
+//
+// Singleton class that manage the loading of audio assets
+// and control the mixer to reproduce sounds and music
 
 #ifndef __AudioManager__
 #define __AudioManager__
@@ -28,9 +31,9 @@ public:
 	bool init();
 
 	/* Resources load */
-	// Add a music track file to the playlist
+	// Add a music track file to the playlist (better if .mp3)
 	bool loadMusic(std::string fileName, std::string id);
-	// Add a sound fx clip to sound collection
+	// Add a sound fx clip to sound collection (better if .wav)
 	bool loadSound(std::string fileName, std::string id);
 	
 	/* Music controls */
@@ -49,9 +52,6 @@ public:
 	int playSound(std::string id, int loop);
 	// Stop the sound on a particular channel
 	void stopChannel(int channel);
-	
-
-	
 
 private:
 	AudioManager(){};
@@ -64,14 +64,10 @@ private:
 	static AudioManager *s_pInstance;
 
 	//The music that will be played
-	Mix_Music *gMusic = NULL;
-	//The sound effects that will be used
-	Mix_Chunk *gScratch = NULL;
-	Mix_Chunk *gHigh = NULL;
-	Mix_Chunk *gMedium = NULL;
-	Mix_Chunk *gLow = NULL;
-
+	Mix_Music *gMusic = NULL;	
+	// Collection of music assets
 	std::map<std::string, Mix_Music*> m_musicPlaylist;
+	// Collection of sounds assets
 	std::map<std::string, Mix_Chunk*> m_soundClips;
 };
 typedef AudioManager GAudioManager;

@@ -1,3 +1,4 @@
+/* Easing Function as referenced here http://easings.net/ */
 #ifndef _PENNER_BACK
 #define _PENNER_BACK
 

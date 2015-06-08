@@ -170,9 +170,7 @@ void Game::handleEvents()
 
 void Game::render()
 {
-	SDL_RenderClear(m_pRenderer);		// clear the frame buffer
-
-	//m_pGameStateMachine->render();
+	SDL_RenderClear(m_pRenderer);		// clear the frame buffer	
 	
 	// Draw bottom part of the tunnel first	
 	GSpriteManager::Instance()->drawCropped(sprite_assets::BACKGROUND, 0, 94, 0, 94, 755, 506, m_pRenderer, SDL_FLIP_NONE);
@@ -209,8 +207,7 @@ void Game::clean()
 #ifdef _DEBUG
 	cout << "Cleaning game\n";
 #endif
-	GSpriteManager::Instance()->clearTextureMap();
-
+	GSpriteManager::Instance()->clearTextureMap();	
 	SDL_DestroyWindow(m_pWindow);
 	SDL_DestroyRenderer(m_pRenderer);
 	SDL_Quit();

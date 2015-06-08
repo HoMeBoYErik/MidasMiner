@@ -1,3 +1,6 @@
+/* Easing Function as referenced here http://easings.net/ */
+/* EG: This is the function used while swapping gems*/
+
 #include "Quad.h"
 
 float Quad::easeIn (float t,float b , float c, float d) {

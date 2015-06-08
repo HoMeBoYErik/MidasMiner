@@ -1,3 +1,5 @@
+/* Easing Function as referenced here http://easings.net/ */
+/* EG: This is the function used while swapping gems*/
 #ifndef _PENNER_QUAD
 #define _PENNER_QUAD
 

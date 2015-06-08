@@ -1,3 +1,4 @@
+/* Timer class made to control game time */
 #ifndef __TIMER__
 #define __TIMER__
 

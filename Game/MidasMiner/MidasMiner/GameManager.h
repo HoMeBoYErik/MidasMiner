@@ -58,60 +58,61 @@ public:
 		return s_pInstance;
 	}
 
+	// add a new gameobject to a std::map used to update and render
 	void registerGameObject(Uint8 id, GameObject *pGameObject);
 
-	bool init();
-	void update(float timestep);
-	void render(SDL_Renderer* pRenderer);	
-	void handlePlayerInput();
-	void restartGame();
-	void refreshBoardOnRestartGame();
+	bool init();	// init all variables						
+	void update(float timestep); // update game logic
+	void render(SDL_Renderer* pRenderer); // draw game objects on screen	
+	void handlePlayerInput(); // handle input
+	void restartGame();	// restart the game logic for a new game
+	void refreshBoardOnRestartGame(); // recalculate sprite renderer for new game
 	
-	bool isValidSwap(int fromRow, int fromCol, int toRow, int toCol);	
-	void swapGameObjects(int fromRow, int fromCol, int toRow, int toCol, bool animated);
-	bool hasChainAt(int row, int col);
-	void detectPossibleSwaps();
-	bool isPossibleSwap(SwapPair* swappable);
-	bool isPossibleSwap(int fromRow, int fromCol, int toRow, int toCol);
-	void registerLastUserSwap(int fromRow, int fromCol, int toRow, int toCol);
-	void handleMatches();
-	bool detectChains();
-	void detectHorizontalMatches();
-	void detectVerticalMatches();	
-	void removeChains();
-	void fillHoles();	
-	void makeGemsFall();
-	void addNewGems();
-	void updateScore(int newScore);
-	void beginNextTurn();	
+	bool isValidSwap(int fromRow, int fromCol, int toRow, int toCol); // determine if is a valid user move (eg: no diagonal)	
+	void swapGameObjects(int fromRow, int fromCol, int toRow, int toCol, bool animated); // swap 2 gems in the board
+	bool hasChainAt(int row, int col); // helper function that detect chain of 3 gems above and to the left of a cell
+	void detectPossibleSwaps();	// calculate all possible valid moves (moves that generate a chain of 3 or more) useful to give hints to the player
+	bool isPossibleSwap(SwapPair* swappable);	// valid if the swap generate a chain
+	bool isPossibleSwap(int fromRow, int fromCol, int toRow, int toCol); // valid if the swap generate a chain
+	void registerLastUserSwap(int fromRow, int fromCol, int toRow, int toCol); // register last player move to undo that if it's invalid
+	void handleMatches();	// start the process to look for chains, remove chains, fill holes and make fall down new gems
+	bool detectChains(); // detect if there are any chains
+	void detectHorizontalMatches();// detect if there are any chains in horizontal
+	void detectVerticalMatches();	// detect if there are any chains in vertical
+	void removeChains();	// remove detected chains
+	void fillHoles();	// calculate the movement downwards to make the gem fall down
+	void makeGemsFall(); // start gem fall animation
+	void addNewGems(); // reuse gameobjects to simulate the fall of new gems
+	void updateScore(int newScore); // update the score in logic and call the gui
+	void beginNextTurn();	// user is able to input again
 
 	// board manipulation methods and accessors
-	void createNewBoard();
-	void shuffleBoard();
-	void populateBoard();
-	bool isPointInBoard(int x, int y);
-	bool isSameBoardCell(int fromRow, int fromCol, int toRow, int toCol);
-	void mapPointToBoardCell(int x, int y, int &row, int &col);
-	void mapBoardCellToPoint(int row, int col, int &x, int &y);
-	void removeChainFromBoard(GemChain *);
-	void removeGemFromBoard(int row, int col);
-	void removeGemFromBoard(GameObject *);
+	void createNewBoard(); // generate a new logic board
+	void shuffleBoard(); // shuffle logic elemenets: TODO not implemented
+	void populateBoard(); // assign a gameobject (gem) to every logic cell
+	bool isPointInBoard(int x, int y); // if is a valid input in game board (the click is inside the board?)
+	bool isSameBoardCell(int fromRow, int fromCol, int toRow, int toCol); // user clicked two times the same cell?
+	void mapPointToBoardCell(int x, int y, int &row, int &col); // given a point in pixels return the cell coordinates
+	void mapBoardCellToPoint(int row, int col, int &x, int &y); // given row and col of the table return the pixel whare to draw the sprite
+	void removeChainFromBoard(GemChain *); // remove a detected chain from game board
+	void removeGemFromBoard(int row, int col); // hide and remove a gem from the game
+	void removeGemFromBoard(GameObject *); // hide and remove a gem from the game
 
 	// Manage the animation counter
 	// If there is an animation active prevent user from interacting
-	void startedAnimation();
-	void endedAnimation();
-	bool hasAnimationRunning();
+	void startedAnimation(); // increment animation reference counter
+	void endedAnimation(); // decrement animation reference counter
+	bool hasAnimationRunning(); // when animation counter is 0 there are no active animation so the user can interact
 
-	bool hasToCheckSwap;
-	bool hasToHandleMatches;
+	bool hasToCheckSwap; // does the game logic has to check a new user swap?
+	bool hasToHandleMatches; // does the game logic has to calculate and handle new chain matches?
 
-	int mScore;
-	float mGameTime;
-	bool isGameRunning;
-	bool hasTimeWarning;
-	bool isGameOver;
-	int warningChannel;
+	int mScore; // player current score
+	float mGameTime; // time of a game match = 60 secs
+	bool isGameRunning; // true when mGameTime > 0
+	bool hasTimeWarning; // used to reproduce time running out sound
+	bool isGameOver; // when the match ended = true
+	int warningChannel; // record the time running out sound channel to stop it from looping 
 	
 	/* '0' = empty cell */
 	/* 'b' =  Blue Gem */
@@ -129,10 +130,13 @@ public:
 	int lastUserToRow = 0;
 	int lastUserToCol = 0;
 
+	// structure to hold detected chains at every logic update
 	std::set<GemChain*> m_detectedHorizontalChains;
 	std::set<GemChain*> m_detectedVerticalChains;
 
+	// gems in the queue are processed to reproduce fall animation 
 	std::queue<GameObject*> m_gemFallingAnimationQueue;
+	// gems removed from the game are reused to simulate new gems entering the screen
 	std::queue<GameObject *> m_reusableGems;	
 
 private:

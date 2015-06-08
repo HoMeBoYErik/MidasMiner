@@ -93,9 +93,7 @@ void InputManager::handleEvent(SDL_Event& e)
 
 		// Begin click of left button
 		if (e.type == SDL_MOUSEBUTTONDOWN && e.button.button == SDL_BUTTON_LEFT && e.key.repeat == 0)
-		{
-
-			//std::cout << "Left mouse button pressed down " << std::endl;
+		{			
 			// if is a valid cell
 			if (GGameManager::Instance()->isPointInBoard(x, y))
 			{
@@ -114,16 +112,8 @@ void InputManager::handleEvent(SDL_Event& e)
 
 					if (GGameManager::Instance()->isValidSwap(fromRow, fromCol, toRow, toCol))
 					{
-						//std::cout << "1 Valid swap from (" << fromRow << "," << fromCol << ") to :(" << toRow << "," << toCol << ")" << std::endl;
-						//std::cout << "Update game board, start animations and more" << std::endl;
-						//if (GGameManager::Instance()->isPossibleSwap(fromRow, fromCol, toRow, toCol))
-						//{
 							GGameManager::Instance()->swapGameObjects(fromRow, fromCol, toRow, toCol, true);
-							GGameManager::Instance()->registerLastUserSwap(fromRow, fromCol, toRow, toCol);
-							
-						//}			
-												
-						//userInteractionEnabled = false;
+							GGameManager::Instance()->registerLastUserSwap(fromRow, fromCol, toRow, toCol);								
 						
 						clearAllSwap();
 					}
@@ -141,6 +131,7 @@ void InputManager::handleEvent(SDL_Event& e)
 			}
 		}
 
+		// On left mouse button release
 		else if (e.type == SDL_MOUSEBUTTONUP && e.button.button == SDL_BUTTON_LEFT && e.key.repeat == 0)
 		{
 			//std::cout << " Left Mouse button up event" << std::endl;
@@ -153,15 +144,10 @@ void InputManager::handleEvent(SDL_Event& e)
 					selectSwapTo(x, y);
 
 					if (GGameManager::Instance()->isValidSwap(fromRow, fromCol, toRow, toCol))
-					{
-						//std::cout << "2 Valid swap from (" << fromRow << "," << fromCol << ") to :(" << toRow << "," << toCol << ")" << std::endl;
-						//std::cout << "Update game board, start animations and more" << std::endl;
-						//if (GGameManager::Instance()->isPossibleSwap(fromRow, fromCol, toRow, toCol))
-						//{
+					{						
 							GGameManager::Instance()->swapGameObjects(fromRow, fromCol, toRow, toCol, true);
-							GGameManager::Instance()->registerLastUserSwap(fromRow, fromCol, toRow, toCol);
-							
-						//}//userInteractionEnabled = false;
+							GGameManager::Instance()->registerLastUserSwap(fromRow, fromCol, toRow, toCol);							
+						
 						clearAllSwap();
 					}
 					else if (GGameManager::Instance()->isSameBoardCell(fromRow, fromCol, toRow, toCol))
@@ -193,6 +179,7 @@ void InputManager::handleEvent(SDL_Event& e)
 			{
 				TheGame::Instance()->quit();
 			}
+			// DETECT Click on X Button restart game
 			else if (x > 560 && x < 630 && y > 298 && y < 370)
 			{
 				GGameManager::Instance()->restartGame();

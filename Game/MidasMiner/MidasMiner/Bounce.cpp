@@ -1,3 +1,6 @@
+/* Easing Function as referenced here http://easings.net/ */
+/* EG: used when gems fall down into the board*/
+
 #include "Bounce.h"
 
 float Bounce::easeIn (float t,float b , float c, float d) {

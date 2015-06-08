@@ -40,7 +40,9 @@ bool AudioManager::loadMusic(std::string fileName, std::string id)
 	Mix_Music* pMusic = Mix_LoadMUS(fileName.c_str());
 	if (pMusic == 0)
 	{
+#ifdef _DEBUG
 		std::cout << "Could not load music: ERROR - " << Mix_GetError() << std::endl;
+#endif;
 		return false;
 	}
 
@@ -55,7 +57,9 @@ bool AudioManager::loadSound(std::string fileName, std::string id)
 	Mix_Chunk* pChunk = Mix_LoadWAV(fileName.c_str());
 	if (pChunk == 0)
 	{
+#ifdef _DEBUG
 		std::cout << "Could not load SFX: ERROR - " << Mix_GetError() << std::endl;
+#endif
 		return false;
 	}
 

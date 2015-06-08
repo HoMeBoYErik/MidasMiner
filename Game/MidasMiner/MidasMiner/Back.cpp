@@ -1,3 +1,4 @@
+/* Easing Function as referenced here http://easings.net/ */
 #include "Back.h"
 
 float Back::easeIn (float t,float b , float c, float d) {
