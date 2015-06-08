@@ -13,3 +13,9 @@ If you build the game from scratch please copy all .dll files and "assets" folde
 The project is also hosted on GitHub
 https://github.com/HoMeBoYErik/MidasMiner/
 
+=================
+
+Game Rules:
+
+- simply drag or click to swap gems and match a 3 chain or more
+- you have 60 seconds to score the more points you can
