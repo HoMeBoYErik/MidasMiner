@@ -24,7 +24,12 @@ enum sprite_assets
 	YELLOW_GEM = 10,
 	YELLOW_GEM_SELECTED = 11,
 	SCORE_TEXT = 12,
-	TIME_TEXT = 13
+	TIME_TEXT = 13,
+	MENU_CONTAINER = 14,
+	BUTTON_1 = 15,
+	BUTTON_2 = 16,
+	BUTTON_OK = 17,
+	BUTTON_NO = 18
 };
 
 
@@ -60,7 +65,7 @@ public:
 	
 	// Setter functions to update the GUI
 	void updateScore(int newScore);
-	void updateGameTime(std::string time);
+	void updateGameTime(std::string time, bool isWarning);
 
 	void clearTextureMap();
 	void clearFromTextureMap(int id);

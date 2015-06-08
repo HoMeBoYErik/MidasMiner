@@ -62,10 +62,17 @@ void SpriteManager::updateScoreText(std::string textureText, SDL_Color textColor
 	m_textureMap[sprite_assets::SCORE_TEXT] = scoreText;
 }
 
-void SpriteManager::updateGameTime(std::string gameTime)
+void SpriteManager::updateGameTime(std::string gameTime, bool isWarning)
 {
+	if (isWarning)
+	{
+		updateGameTimeText(gameTime, mTimerWarningColor, pRenderer);
+	}	
+	else
+	{
+		updateGameTimeText(gameTime, mTimerColor, pRenderer);
+	}
 	
-	updateGameTimeText(gameTime, mTimerColor, pRenderer);
 }
 
 void SpriteManager::updateGameTimeText(std::string textureText, SDL_Color textColor, SDL_Renderer* pRenderer)
@@ -123,6 +130,8 @@ bool SpriteManager::init(SDL_Renderer* pRenderer)
 	GSpriteManager::Instance()->load("assets/sprites/PurpleSelected.png", sprite_assets::PURPLE_GEM_SELECTED, pRenderer);
 	GSpriteManager::Instance()->load("assets/sprites/RedSelected.png", sprite_assets::RED_GEM_SELECTED, pRenderer);
 	GSpriteManager::Instance()->load("assets/sprites/YellowSelected.png", sprite_assets::YELLOW_GEM_SELECTED, pRenderer);
+
+	GSpriteManager::Instance()->load("assets/sprites/MenuContainer.png", sprite_assets::MENU_CONTAINER, pRenderer);
 	
 	GSpriteManager::Instance()->updateScoreText("Score: 0", mScoreColor, pRenderer);
 	GSpriteManager::Instance()->updateGameTimeText("Time Left: 1:00", mTimerColor, pRenderer);
@@ -148,12 +157,12 @@ void SpriteManager::draw(int id, int x, int y, int width, int height, SDL_Render
 
 void SpriteManager::drawScoreText(SDL_Renderer* pRenderer)
 {
-	draw(sprite_assets::SCORE_TEXT, 10, 10, scoreTextWidth, scoreTextHeight, pRenderer, SDL_FLIP_NONE);
+	draw(sprite_assets::SCORE_TEXT, 15, 10, scoreTextWidth, scoreTextHeight, pRenderer, SDL_FLIP_NONE);
 }
 
 void SpriteManager::drawTimeText(SDL_Renderer* pRenderer)
 {
-	draw(sprite_assets::TIME_TEXT, 10, 50, timeTextWidth, timeTextHeight, pRenderer, SDL_FLIP_NONE);
+	draw(sprite_assets::TIME_TEXT, 15, 50, timeTextWidth, timeTextHeight, pRenderer, SDL_FLIP_NONE);
 }
 
 void SpriteManager::drawCropped(int id, int startX, int startY, int x, int y, int width, int height, SDL_Renderer* pRenderer, SDL_RendererFlip flip)

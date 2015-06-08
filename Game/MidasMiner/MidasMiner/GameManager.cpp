@@ -47,7 +47,7 @@ void GameManager::update(float timestep)
 		if (mGameTime <= 0)
 		{
 			isGameRunning = false;
-			//GInputManager::Instance()->userInteractionEnabled = false;
+			GInputManager::Instance()->userInteractionEnabled = false;
 		}
 
 		std::string gameTime = "Time: ";
@@ -70,7 +70,7 @@ void GameManager::update(float timestep)
 		
 		gameTime += std::to_string(static_cast<int>(mGameTime) % MATCH_TIME);
 
-		GSpriteManager::Instance()->updateGameTime(gameTime);
+		GSpriteManager::Instance()->updateGameTime(gameTime, hasTimeWarning);
 		
 		mGameTime -= timestep;
 	}
