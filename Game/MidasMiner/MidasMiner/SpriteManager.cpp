@@ -3,6 +3,7 @@
 
 #include "SpriteManager.h"
 #include "SDL_image.h"
+#include "Constants.h"
 
 
 SpriteManager* SpriteManager::s_pInstance = 0;
@@ -95,6 +96,26 @@ void SpriteManager::updateGameTimeText(std::string textureText, SDL_Color textCo
 	m_textureMap[sprite_assets::TIME_TEXT] = timeText;
 }
 
+void SpriteManager::updateGameOverText(std::string textureText, SDL_Color textColor, SDL_Renderer* pRenderer)
+{
+	SDL_Surface* pTextSurface = TTF_RenderText_Solid(gFont, textureText.c_str(), textColor);
+
+	if (pTextSurface == NULL)
+	{
+		return;
+	}
+
+	gameOverTextWidth = pTextSurface->w;
+	gameOverTextHeight = pTextSurface->h;
+
+	gameOverText = SDL_CreateTextureFromSurface(pRenderer, pTextSurface);
+	//Enable blending on texture
+	//SDL_SetTextureBlendMode(scoreText, SDL_BLENDMODE_BLEND);
+	SDL_FreeSurface(pTextSurface);
+
+	m_textureMap[sprite_assets::GAME_OVER_TEXT] = gameOverText;
+}
+
 bool SpriteManager::init(SDL_Renderer* pRenderer)
 {
 	GSpriteManager::Instance()->pRenderer = pRenderer;
@@ -115,8 +136,6 @@ bool SpriteManager::init(SDL_Renderer* pRenderer)
 		return false;
 	}
 	
-
-	
 	GSpriteManager::Instance()->load("assets/sprites/BackGround.jpg", sprite_assets::BACKGROUND , pRenderer);
 	// Loading gems image assets
 	GSpriteManager::Instance()->load("assets/sprites/Blue.png", sprite_assets::BLUE_GEM, pRenderer);
@@ -132,9 +151,12 @@ bool SpriteManager::init(SDL_Renderer* pRenderer)
 	GSpriteManager::Instance()->load("assets/sprites/YellowSelected.png", sprite_assets::YELLOW_GEM_SELECTED, pRenderer);
 
 	GSpriteManager::Instance()->load("assets/sprites/MenuContainer.png", sprite_assets::MENU_CONTAINER, pRenderer);
+	GSpriteManager::Instance()->load("assets/sprites/ButtonOK.png", sprite_assets::BUTTON_OK, pRenderer);
+	GSpriteManager::Instance()->load("assets/sprites/ButtonNO.png", sprite_assets::BUTTON_NO, pRenderer);
 	
 	GSpriteManager::Instance()->updateScoreText("Score: 0", mScoreColor, pRenderer);
 	GSpriteManager::Instance()->updateGameTimeText("Time Left: 1:00", mTimerColor, pRenderer);
+	GSpriteManager::Instance()->updateGameOverText("Time is up! Play Again?", mScoreColor, pRenderer);
 	
 	
 	return true;
@@ -163,6 +185,11 @@ void SpriteManager::drawScoreText(SDL_Renderer* pRenderer)
 void SpriteManager::drawTimeText(SDL_Renderer* pRenderer)
 {
 	draw(sprite_assets::TIME_TEXT, 15, 50, timeTextWidth, timeTextHeight, pRenderer, SDL_FLIP_NONE);
+}
+
+void SpriteManager::drawGameOverText(SDL_Renderer* pRenderer)
+{
+	draw(sprite_assets::GAME_OVER_TEXT, SCREEN_WIDTH_RESOLUTION / 2 - 20 , SCREEN_HEIGHT_RESOLUTION/2 - 80, gameOverTextWidth, gameOverTextHeight, pRenderer, SDL_FLIP_NONE);
 }
 
 void SpriteManager::drawCropped(int id, int startX, int startY, int x, int y, int width, int height, SDL_Renderer* pRenderer, SDL_RendererFlip flip)

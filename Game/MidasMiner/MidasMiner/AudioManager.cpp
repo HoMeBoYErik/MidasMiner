@@ -31,7 +31,7 @@ bool AudioManager::init()
 	GAudioManager::Instance()->loadSound("assets/sfx/SwapFailed.wav", "swapFailed"); 
 	GAudioManager::Instance()->loadSound("assets/sfx/GemLand.wav", "gemLand");
 	GAudioManager::Instance()->loadSound("assets/sfx/TimeWarning.wav", "timeWarning");
-
+	GAudioManager::Instance()->loadSound("assets/sfx/YouWin.wav", "youWin");
 	return true;
 }
 
@@ -83,9 +83,19 @@ void AudioManager::stopMusic()
 	Mix_HaltMusic();
 }
 
-void AudioManager::playSound(std::string id, int loop)
+void AudioManager::rewindMusic()
 {
-	Mix_PlayChannel(-1, m_soundClips[id], loop);
+	Mix_RewindMusic();
+}
+
+int AudioManager::playSound(std::string id, int loop)
+{
+	return Mix_PlayChannel(-1, m_soundClips[id], loop);	
+}
+
+void AudioManager::stopChannel(int channel)
+{
+	Mix_HaltChannel(channel);
 }
 
 

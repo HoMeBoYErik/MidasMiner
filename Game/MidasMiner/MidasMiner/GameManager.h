@@ -28,6 +28,8 @@ static const Uint8 DIFFERENT_GEMS = 5;
 
 static const int MATCH_TIME = 60;
 
+static const int BASE_SCORE = 100;
+
 
 enum board_elems
 {
@@ -62,6 +64,8 @@ public:
 	void update(float timestep);
 	void render(SDL_Renderer* pRenderer);	
 	void handlePlayerInput();
+	void restartGame();
+	void refreshBoardOnRestartGame();
 	
 	bool isValidSwap(int fromRow, int fromCol, int toRow, int toCol);	
 	void swapGameObjects(int fromRow, int fromCol, int toRow, int toCol, bool animated);
@@ -79,8 +83,7 @@ public:
 	void makeGemsFall();
 	void addNewGems();
 	void updateScore(int newScore);
-	void beginNextTurn();
-	
+	void beginNextTurn();	
 
 	// board manipulation methods and accessors
 	void createNewBoard();
@@ -107,6 +110,8 @@ public:
 	float mGameTime;
 	bool isGameRunning;
 	bool hasTimeWarning;
+	bool isGameOver;
+	int warningChannel;
 	
 	/* '0' = empty cell */
 	/* 'b' =  Blue Gem */

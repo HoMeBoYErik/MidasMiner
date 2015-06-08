@@ -29,7 +29,8 @@ enum sprite_assets
 	BUTTON_1 = 15,
 	BUTTON_2 = 16,
 	BUTTON_OK = 17,
-	BUTTON_NO = 18
+	BUTTON_NO = 18,
+	GAME_OVER_TEXT = 19
 };
 
 
@@ -62,6 +63,7 @@ public:
 	// GUI Drawing Functions
 	void drawScoreText(SDL_Renderer* pRenderer);
 	void drawTimeText(SDL_Renderer* pRenderer);
+	void drawGameOverText(SDL_Renderer* pRenderer);
 	
 	// Setter functions to update the GUI
 	void updateScore(int newScore);
@@ -85,6 +87,7 @@ private:
 
 	void updateScoreText(std::string textureText, SDL_Color textColor, SDL_Renderer* pRenderer);
 	void updateGameTimeText(std::string textureText, SDL_Color textColor, SDL_Renderer* pRenderer);
+	void updateGameOverText(std::string textureText, SDL_Color textColor, SDL_Renderer* pRenderer);
 
 	// Container of all loaded sprite assets
 	std::map<int, SDL_Texture*> m_textureMap;
@@ -94,8 +97,11 @@ private:
 	int scoreTextWidth, scoreTextHeight;
 	SDL_Texture* timeText;
 	int timeTextWidth, timeTextHeight;	
+	SDL_Texture* gameOverText;
+	int gameOverTextWidth, gameOverTextHeight;
 	//Globally used font
 	TTF_Font *gFont = NULL;
+	// GUI Text Colors
 	SDL_Color mScoreColor;
 	SDL_Color mTimerColor;	
 	SDL_Color mTimerWarningColor;

@@ -89,7 +89,6 @@
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Quad.cpp" />
-    <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="SpriteManager.cpp" />
     <ClCompile Include="Timer.cpp" />
   </ItemGroup>
@@ -104,7 +103,6 @@
     <ClInclude Include="GemChain.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="Quad.h" />
-    <ClInclude Include="Sprite.h" />
     <ClInclude Include="SpriteManager.h" />
     <ClInclude Include="SwapPair.h" />
     <ClInclude Include="Timer.h" />

@@ -35,8 +35,33 @@ bool GameManager::init()
 	mGameTime = MATCH_TIME; // in seconds
 	isGameRunning = true;
 	hasTimeWarning = false;
+	isGameOver = false;
 
 	return true;
+}
+
+void GameManager::restartGame()
+{
+	createNewBoard();
+	refreshBoardOnRestartGame();
+	detectPossibleSwaps();
+	GAudioManager::Instance()->resumeMusic();
+	GAudioManager::Instance()->rewindMusic();
+
+	lastUserSwap = new SwapPair();
+	lastUserSwap->a = NULL;
+	lastUserSwap->b = NULL;
+
+	hasToCheckSwap = false;
+	hasToHandleMatches = false;
+
+	mScore = 0;
+	mGameTime = MATCH_TIME; // in seconds
+	isGameRunning = true;
+	hasTimeWarning = false;
+	isGameOver = false;
+
+	GInputManager::Instance()->userInteractionEnabled = true;
 }
 
 void GameManager::update(float timestep)
@@ -46,8 +71,15 @@ void GameManager::update(float timestep)
 	{
 		if (mGameTime <= 0)
 		{
+			// stop tic tac sound
+			GAudioManager::Instance()->stopChannel(warningChannel);
+			// pause music
+			GAudioManager::Instance()->pauseMusic();
+			// play a winning sound
+			GAudioManager::Instance()->playSound("youWin", false);
 			isGameRunning = false;
 			GInputManager::Instance()->userInteractionEnabled = false;
+			isGameOver = true;
 		}
 
 		std::string gameTime = "Time: ";
@@ -63,7 +95,7 @@ void GameManager::update(float timestep)
 			if (!hasTimeWarning)
 			{
 				hasTimeWarning = true;
-				GAudioManager::Instance()->playSound("timeWarning", -1);
+				warningChannel = GAudioManager::Instance()->playSound("timeWarning", -1);
 			}
 			gameTime += ":0";  
 		}
@@ -115,7 +147,7 @@ void GameManager::update(float timestep)
 
 		return;
 	}
-	else
+	else if ( isGameRunning )
 	{
 		GInputManager::Instance()->userInteractionEnabled = true;
 	}
@@ -179,6 +211,18 @@ void GameManager::populateBoard()
 				registerGameObject(go->id, go);
 				boardGameObjects[row][col] = go;
 			}			
+		}
+	}
+}
+
+void GameManager::refreshBoardOnRestartGame()
+{
+	for (int row = 0; row < BOARD_ROWS; ++row)
+	{
+		for (int col = 0; col < BOARD_COLS; ++col)
+		{
+			Uint8 gem = board[row][col];
+			boardGameObjects[row][col]->setSprites(gem);
 		}
 	}
 }
@@ -554,7 +598,7 @@ void GameManager::removeChains()
 		{
 			removeChainFromBoard(f);			
 			GAudioManager::Instance()->playSound("removeChain", false);
-			updateScore(100);
+			updateScore(BASE_SCORE * f->gems.size()); // addo points based on chain length
 
 		}
 	}
@@ -565,7 +609,7 @@ void GameManager::removeChains()
 		{
 			removeChainFromBoard(f);			
 			GAudioManager::Instance()->playSound("removeChain", false);
-			updateScore(100);
+			updateScore(BASE_SCORE * f->gems.size()); // addo points based on chain length
 		}
 	}	
 }

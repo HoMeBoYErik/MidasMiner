@@ -1,20 +1,12 @@
 #include "Game.h"
 
+#include "Constants.h" 
 #include "SpriteManager.h"
 #include "InputManager.h"
 #include "AudioManager.h"
 #include "GameManager.h"
 #include <time.h>
-/*#include "InputHandler.h"
-#include "MainMenuState.h"
-#include "GameObjectFactory.h"
-#include "MenuButton.h"
-#include "AnimatedGraphic.h"
-#include "Player.h"
-#include "ScrollingBackground.h"
-#include "SoundManager.h"
-#include "GameOverState.h"
-#include "Snail.h"*/
+
 #include <iostream>
 
 using namespace std;
@@ -129,10 +121,6 @@ bool Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 		return false; // something went wrong loading audio assets
 	}
 
-
-
-	gemTest = new Sprite();	
-
 	// start the menu state
 	//m_pGameStateMachine = new GameStateMachine();
 	//m_pGameStateMachine->changeState(new MainMenuState());
@@ -176,7 +164,7 @@ void Game::handleEvents()
 
 		// Propagate the input
 		GInputManager::Instance()->handleEvent(event);
-		gemTest->handleEvent(event);
+		
 	}
 }
 
@@ -197,13 +185,20 @@ void Game::render()
 
 
 	// DRAW GUI ELEMENTS
-	GSpriteManager::Instance()->draw(sprite_assets::MENU_CONTAINER, 1, 0, 160, 100, m_pRenderer, SDL_FLIP_NONE);
+	GSpriteManager::Instance()->draw(sprite_assets::MENU_CONTAINER, 1, 0, 180, 100, m_pRenderer, SDL_FLIP_NONE);
 	GSpriteManager::Instance()->drawScoreText(m_pRenderer);
 	GSpriteManager::Instance()->drawTimeText(m_pRenderer);
 	
-
-
-
+	
+	// if game is over show final GUI
+	if (GGameManager::Instance()->isGameOver)
+	{
+		GSpriteManager::Instance()->draw(sprite_assets::MENU_CONTAINER, SCREEN_WIDTH_RESOLUTION / 2 - 80, SCREEN_HEIGHT_RESOLUTION / 2 - 125, 400, 250, m_pRenderer, SDL_FLIP_NONE);
+		GSpriteManager::Instance()->draw(sprite_assets::BUTTON_OK, SCREEN_WIDTH_RESOLUTION / 2 + 180, SCREEN_HEIGHT_RESOLUTION / 2 + 5, 71, 69, m_pRenderer, SDL_FLIP_NONE);
+		GSpriteManager::Instance()->draw(sprite_assets::BUTTON_NO, SCREEN_WIDTH_RESOLUTION / 2 - 20, SCREEN_HEIGHT_RESOLUTION / 2, 76, 78, m_pRenderer, SDL_FLIP_NONE);
+		GSpriteManager::Instance()->drawGameOverText(m_pRenderer);
+	}
+	
 	SDL_RenderPresent(m_pRenderer);		// render to the screen
 }
 
@@ -214,16 +209,7 @@ void Game::clean()
 #ifdef _DEBUG
 	cout << "Cleaning game\n";
 #endif
-
-	//TheInputHandler::Instance()->clean();
-
-	//m_pGameStateMachine->clean();
-
-	//m_pGameStateMachine = 0;
-	//delete m_pGameStateMachine;
-
 	GSpriteManager::Instance()->clearTextureMap();
-	delete gemTest;
 
 	SDL_DestroyWindow(m_pWindow);
 	SDL_DestroyRenderer(m_pRenderer);

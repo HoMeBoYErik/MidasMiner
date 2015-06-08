@@ -42,9 +42,13 @@ public:
 	void resumeMusic();
 	// Stop current playing track
 	void stopMusic();
+	// Rewind track to beginnig
+	void rewindMusic();
 
 	// Play a sound effect
-	void playSound(std::string id, int loop);
+	int playSound(std::string id, int loop);
+	// Stop the sound on a particular channel
+	void stopChannel(int channel);
 	
 
 	

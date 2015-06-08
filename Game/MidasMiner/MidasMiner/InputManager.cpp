@@ -2,6 +2,7 @@
 #include "SDL.h"
 #include "AudioManager.h"
 #include "GameManager.h"
+#include "Game.h"
 
 InputManager* InputManager::s_pInstance = 0;
 
@@ -83,6 +84,7 @@ void InputManager::update(float timestep)
 
 void InputManager::handleEvent(SDL_Event& e)
 {
+	// In Game Interaction
 	if (userInteractionEnabled)
 	{
 		//Get mouse position
@@ -175,5 +177,27 @@ void InputManager::handleEvent(SDL_Event& e)
 				}
 			}
 		}
-	}			
+	}
+
+	// Game Over Menu Interaction
+	else if (GGameManager::Instance()->isGameOver)
+	{
+		//Get mouse position
+		int x, y;
+		SDL_GetMouseState(&x, &y);
+
+		if (e.type == SDL_MOUSEBUTTONDOWN && e.button.button == SDL_BUTTON_LEFT && e.key.repeat == 0)
+		{
+			// DETECT Click on X Button close game
+			if (x > 358 && x < 430 && y > 298 && y < 370 )
+			{
+				TheGame::Instance()->quit();
+			}
+			else if (x > 560 && x < 630 && y > 298 && y < 370)
+			{
+				GGameManager::Instance()->restartGame();
+			}
+			
+		}		
+	}
 }

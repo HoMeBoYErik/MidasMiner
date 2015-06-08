@@ -9,7 +9,7 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_mixer.h>
-#include "Sprite.h"
+
 //#include "GameStateMachine.h"
 //#include "SDL_mixer.h"
 //#include "Vector2D.h"
@@ -58,7 +58,6 @@ public:
 	int getGameWidth() const { return m_gameWidth; }
 	int getGameHeight() const { return m_gameHeight; }	
 
-	Sprite *gemTest;
 
 private:
 
