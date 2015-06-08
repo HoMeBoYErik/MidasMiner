@@ -56,6 +56,7 @@ void GameManager::restartGame()
 	hasToHandleMatches = false;
 
 	mScore = 0;
+	updateScore(0);
 	mGameTime = MATCH_TIME; // in seconds
 	isGameRunning = true;
 	hasTimeWarning = false;
