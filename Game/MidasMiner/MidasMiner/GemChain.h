@@ -3,7 +3,9 @@
 
 #include <iostream>
 #include <vector>
+#include <memory>
 #include "GameObject.h"
+#include <memory>
 
 
 enum GemChainType
@@ -15,13 +17,16 @@ enum GemChainType
 class GemChain
 {
 public:
-	std::vector<GameObject*> gems;
+	std::vector<std::shared_ptr<GameObject>> gems;
 	GemChainType chainType;
-	void addGem(GameObject* gem);
+	void addGem(std::shared_ptr<GameObject> gem);
 
 	GemChain(){};
 
-	~GemChain(){};
+	~GemChain()
+	{
+		gems.clear();
+	};
 };
 
 

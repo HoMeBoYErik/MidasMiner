@@ -10,6 +10,7 @@
 #include "SDL.h"
 #include "GameObject.h"
 //#include "Vector2D.h"
+#include <memory>
 
 
 /*enum mouse_buttons
@@ -65,8 +66,8 @@ private:
 	int toRow = -1;
 	int toCol = -1;
 
-	GameObject* selectedGameObjectFrom = NULL;
-	GameObject* selectedGameObjectTo = NULL;
+	std::shared_ptr<GameObject> selectedGameObjectFrom;
+	std::shared_ptr<GameObject> selectedGameObjectTo;
 
 	bool noGemSelected();
 	void selectSwapFrom(int x, int y);

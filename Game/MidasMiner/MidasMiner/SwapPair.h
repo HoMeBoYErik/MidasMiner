@@ -2,14 +2,16 @@
 #define __SwapPair__
 
 #include "GameObject.h"
+#include <memory>
 
 class SwapPair
 {
 public:
-	GameObject* a;
-	GameObject* b;
+	std::shared_ptr<GameObject> a;
+	std::shared_ptr<GameObject> b;
 
 	SwapPair(){};
+	SwapPair(std::shared_ptr<GameObject> a, std::shared_ptr<GameObject> b){ this->a = a; this->b = b; }
 	~SwapPair(){};
 
 	// Override copy operator to copy user swap intent

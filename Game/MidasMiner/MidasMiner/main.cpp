@@ -5,6 +5,7 @@
 #include "windows.h"
 #include <iostream>
 
+
 //Keeps track of time between steps
 Timer stepTimer;
 

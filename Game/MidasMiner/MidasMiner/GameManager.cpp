@@ -5,6 +5,7 @@
 #include "InputManager.h"
 #include "AudioManager.h"
 #include "GemChain.h"
+#include <memory>
 
 GameManager* GameManager::s_pInstance = 0;
 
@@ -13,14 +14,14 @@ Uint8 GameManager::gameObjectCounter = 0;
 
 
 // Add a new gameobject to the gameobject map
-void GameManager::registerGameObject(Uint8 id, GameObject *pGameObject)
+void GameManager::registerGameObject(Uint8 id, std::shared_ptr<GameObject> pGameObject)
 {
 	m_GameObjects[id] = pGameObject;
 }
 
 bool GameManager::init()
 {
-	lastUserSwap = new SwapPair();
+	lastUserSwap = std::make_shared<SwapPair>();
 	lastUserSwap->a = NULL;
 	lastUserSwap->b = NULL;
 
@@ -48,9 +49,9 @@ void GameManager::restartGame()
 	GAudioManager::Instance()->resumeMusic();
 	GAudioManager::Instance()->rewindMusic();
 
-	lastUserSwap = new SwapPair();
-	lastUserSwap->a = NULL;
-	lastUserSwap->b = NULL;
+	std::shared_ptr<SwapPair> lastUserSwap(nullptr);
+	//lastUserSwap->a = NULL;
+	//lastUserSwap->b = NULL;
 
 	hasToCheckSwap = false;
 	hasToHandleMatches = false;
@@ -194,11 +195,10 @@ void GameManager::populateBoard()
 	{
 		for (int col = 0; col < BOARD_COLS; ++col)
 		{
-			GameObject *go = NULL;
-
+			
+			std::shared_ptr<GameObject> go = std::make_shared<GameObject>(++GameManager::gameObjectCounter);
 			Uint8 gem = board[row][col];
-
-			go = new GameObject(++GameManager::gameObjectCounter);
+			
 			go->setSprites(gem);			
 
 			// Complete other game object data
@@ -318,24 +318,22 @@ void GameManager::detectPossibleSwaps()
 	{
 		for (int col = 0; col < BOARD_COLS; col++)
 		{
-			GameObject* gem = boardGameObjects[row][col];
+			auto gem = boardGameObjects[row][col];
 			if (gem != NULL)
 			{
 				
 				//Is it possible to swap this gem with the one on the right ?
 				if (col < BOARD_COLS - 1)
 				{
-					GameObject* gemToTheRight = boardGameObjects[row][col + 1];					
+					auto gemToTheRight = boardGameObjects[row][col + 1];					
 					if (gemToTheRight != NULL)
 					{
 						swapGameObjects(row, col, row, col + 1, false);
 
 						if (hasChainAt(row, col + 1) || hasChainAt(row, col))
 						{
-							SwapPair *swappable = new SwapPair();
-							swappable->a = gem;
-							swappable->b = gemToTheRight;
-							m_PossibleSwaps.insert(swappable);
+							auto swappable = std::make_shared<SwapPair>(gem, gemToTheRight);							
+							m_PossibleSwaps.insert(swappable);							
 						}
 						// Swap elements back
 						swapGameObjects(row, col + 1, row, col, false);
@@ -345,17 +343,15 @@ void GameManager::detectPossibleSwaps()
 				//Is it possible to swap this gem with the one below ?
 				if (row < BOARD_ROWS - 1)
 				{
-					GameObject* gemBelow = boardGameObjects[row+1][col];
+					auto gemBelow = boardGameObjects[row+1][col];
 					if (gemBelow != NULL)
 					{
 						// Swap elements
 						swapGameObjects(row, col, row+1, col, false);
 						if (hasChainAt(row, col) || hasChainAt(row+1, col))
-						{
-							SwapPair *swappable = new SwapPair();
-							swappable->a = gem;
-							swappable->b = gemBelow;
-							m_PossibleSwaps.insert(swappable);
+						{							 
+							  std::shared_ptr<SwapPair> swappable = std::make_shared<SwapPair>(gem, gemBelow);
+							  m_PossibleSwaps.insert(swappable);
 						}
 						// Swap elements back
 						swapGameObjects(row+1, col, row, col, false);
@@ -404,14 +400,14 @@ bool GameManager::isValidSwap(int fromRow, int fromCol, int toRow, int toCol)
 /* IS POSSIBLE SWAP - 2 overloads*/
 bool GameManager::isPossibleSwap(int fromRow, int fromCol, int toRow, int toCol)
 {
-	SwapPair* swappable = new SwapPair();
+	std::shared_ptr<SwapPair> swappable = std::make_shared<SwapPair>();
 	swappable->a = boardGameObjects[fromRow][fromCol];
 	swappable->b = boardGameObjects[toRow][toCol];
 
 	return isPossibleSwap(swappable);
 }
 
-bool GameManager::isPossibleSwap(SwapPair* swappable)
+bool GameManager::isPossibleSwap(std::shared_ptr<SwapPair> swappable)
 {
 	// iterate iver all possible valid swaps and match it with current desired swap
 	for (auto f : m_PossibleSwaps ) 
@@ -439,8 +435,8 @@ bool GameManager::isSameBoardCell(int fromRow, int fromCol, int toRow, int toCol
 
 void GameManager::swapGameObjects(int fromRow, int fromCol, int toRow, int toCol, bool animated)
 {
-	GameObject *a;
-	GameObject *b;
+	std::shared_ptr<GameObject> a;
+	std::shared_ptr<GameObject> b;
 
 	a = boardGameObjects[fromRow][fromCol];
 	b = boardGameObjects[toRow][toCol];	
@@ -503,7 +499,7 @@ void GameManager::detectHorizontalMatches()
 			if (board[row][col + 1] == matchType
 				&& board[row][col + 2] == matchType) 
 			{
-				GemChain* chain = new GemChain();
+				std::shared_ptr<GemChain> chain = std::make_shared<GemChain>();
 				chain->chainType = ChainTypeHorizontal;
 				
 				do 
@@ -513,7 +509,8 @@ void GameManager::detectHorizontalMatches()
 				} while (col < BOARD_COLS && board[row][col] == matchType);
 
 				// add the chain to current detected chains
-				m_detectedHorizontalChains.insert(chain);
+				m_detectedHorizontalChains.insert(chain);			
+
 				continue;
 			}
 			col += 1;
@@ -534,7 +531,7 @@ void GameManager::detectVerticalMatches()
 			if (board[row + 1][col] == matchType
 				&& board[row + 2][col] == matchType)
 			{
-				GemChain* chain = new GemChain();
+				std::shared_ptr<GemChain> chain = std::make_shared<GemChain>();
 				chain->chainType = ChainTypeVertical;
 				do
 				{
@@ -544,6 +541,7 @@ void GameManager::detectVerticalMatches()
 
 				// add the chain to current detected chains
 				m_detectedVerticalChains.insert(chain);
+				
 				continue;
 			}
 			row += 1;
@@ -618,7 +616,7 @@ void GameManager::removeChains()
 }
 
 
-void GameManager::removeChainFromBoard(GemChain* chain)
+void GameManager::removeChainFromBoard(std::shared_ptr<GemChain> chain)
 {
 	for (auto c : chain->gems)
 	{		
@@ -699,7 +697,7 @@ void GameManager::makeGemsFall()
 	//while there is something to animate	
 	while (!m_gemFallingAnimationQueue.empty())
 	{
-		GameObject* g = m_gemFallingAnimationQueue.front();
+		auto g = m_gemFallingAnimationQueue.front();
 		m_gemFallingAnimationQueue.pop();
 		g->animateBounce(g->animOrigX, g->animOrigY, g->animDestX, g->animDestY, 0.35f);
 		GGameManager::Instance()->startedAnimation(); 
@@ -735,7 +733,7 @@ void GameManager::addNewGems()
 				boardGameObjects[row][col] = m_reusableGems.front();
 				m_reusableGems.pop();
 
-				GameObject* gem = boardGameObjects[row][col];
+				auto gem = boardGameObjects[row][col];
 				// update his visual parameters and position depending on gemtype
 				if (gem != NULL)
 				{
